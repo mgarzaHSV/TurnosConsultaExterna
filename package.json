@@ -1,0 +1,32 @@
+{
+  "name": "turnosconsultaurgencias",
+  "version": "1.0.0",
+  "description": "Programa para gestionar los turnos y emergencias de los pacientes",
+  "main": "index.js",
+  "scripts": {
+    "tailwind-init": "tailwindcss init",
+    "start": "node index.js",
+    "tailwind:build": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/style.css --watch"
+  },
+  "type": "module",
+  "keywords": [
+    "consulta",
+    "turnos",
+    "paciente",
+    "atencion"
+  ],
+  "author": "MGARZA",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mssql": "^12.2.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.18"
+  }
+}
