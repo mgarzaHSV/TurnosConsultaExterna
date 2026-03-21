@@ -1,36 +1,25 @@
 /*  Bloque para importar las librerias para comenzar con la información */
 import express from 'express';
-import dotenv from 'dotenv/config';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-
-// Agregar todas las intancias de las clases
-const db = new 
-
-
-// --- Configuración para ESM (Reemplazo de __dirname) ---
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { ENV } from './src/config/env.config.js';
+import { MainRouter } from './provider.js';
 
 const app = express(); 
-
-// Ahora ya puedes usar path.join sin errores
-app.use(express.static(path.join(__dirname, 'src', 'public')));
+app.use(express.static(ENV.PUBLIC));
 
 // Configuración de vistas
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', ENV.VIEWS);
 app.set('view engine', 'ejs');
 
+
 /**
- * Middleare para gestionar las peticiones a la ruta principal
- */
-app.get('/', (req, res) => {
-    res.render('cita', { title: 'Página Principal' });
-});
+ * Middleare para gestionar las peticiones con body en formato JSON y URL encoded
+*/
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(MainRouter) // Rutas principales de la aplicación
 
 
-/* Middleware */
 /**
  * Middleare para gestionar las peticiones de ruta que no se encuentrar y mostrar pagina de error 404
  */
@@ -39,19 +28,6 @@ app.use((req, res, next) => {
 });
 
 
-/**
- * Middleare para gestionar las peticiones con body en formato JSON y URL encoded
- */
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-/**
- * Agregar los routers para poder gestionar las peticiones de las rutas
- */
-
-
-
-// Inicializar servidor en el puerto 3000
-app.listen(process.env.PORT);
-console.log("Servidor corrriendo en puerto ", process.env.PORT)
+// Inicializar servidor en el puerto definido en el archivo de configuración
+app.listen(ENV.PORT);
+console.log("Servidor corrriendo en puerto", ENV.PORT)
