@@ -4,12 +4,43 @@ export class AuthController {
         this.AuthService = AuthService;
     }
 
-    async login(req, res){
+    loginPage = async (req, res) =>{
+        console.log(req.session);
+        if(req.session !== undefined && req.session.user !== null){
+            const roles = {
+                'ADMINISTRADOR': '/recepcion',
+                'Recepcion': '/',
+                'Caja': '/cocina',
+                'Medico': '/mesero',
+                'Pantalla': '/pantalla'
+            }
+            console.log(req.session.user.tipo_usr)
+            return res.redirect(roles[req.session.user.tipo_usr]);
+        }
+        const sessionKey = await this.AuthService.createTemporalCredential();
+        req.session.api_token = sessionKey;
+
+        // Enviar la cookie al cliente con el token generado para que pueda ser leida con JavaScript
+        res.cookie('X-SRF-TOKEN', sessionKey, { 
+            maxAge: 300000, // 5 minutos de vida
+            httpOnly: false,
+            sameSite: 'strict' 
+        });
+        res.render('login');
+    }
+
+    verifyUserAndPassword = async (req, res) =>{
+        const {username, password} = req.body;
         try {
-            const { email, password } = req.body;
-            const token = await this.AuthService.login(email, password);
-            res.json({ token });
+            const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
+            if (result != false)
+                res
+                .cookie("access_token", result, { httpOnly: true })
+                .json({ status: 200, mensaje: "Login exitoso" });
+            else res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
+            //res.json({ message: result });
         } catch (error) {
+            console.error(error);
             res.status(401).json({ error: error.message });
         }
     }

@@ -1,10 +1,9 @@
-import { Router } from 'express';
-import { consultarRecepcion } from '../controllers/recepcion.controller.js';
-const routerRecepcion = Router();
+import express from 'express';
 
+export const recepcionRouter = ( RecepcionController )=>{
+    const routerRecepcion = express.Router();
 
-/**
- * Rutas que las recepciones van a manejar
- */
-
-routerRecepcion.get('/recepcion', consultarRecepcion)
+    routerRecepcion.get('/recepcion', RecepcionController.getHTMLDashboard)
+    
+    return routerRecepcion;
+}

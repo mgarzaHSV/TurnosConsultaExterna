@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme{
+    --color-inmediato: #E63023;
+    --color-muyUrgente: #EF7601;
+    --color-urgente: #FFDA1F;
+    --color-normal: #1BA33F;
+    --color-noUrgente: #4E62AB;
+    --color-generado:    #6C5CE7;  /* violeta */
+    --color-fila:        #00B894;  /* turquesa verdoso (no verde puro) */
+    --color-atencion:    #FF7675;  /* coral suave */
+    --color-finalizado:  #2D3436;  /* gris oscuro elegante */
+}

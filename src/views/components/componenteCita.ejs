@@ -1,7 +1,12 @@
 <div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
-    <div class="bg-blue-600 p-4">
-        <h2 class="text-white text-xl font-bold flex items-center gap-2">
-            <span>📅</span> Turno de Consulta Externa
+    <!--<div class="bg-blue-600 p-4">-->
+    <div class="<%- color  %> p-4">
+        <h2 class="<%if (color === 'bg-urgente'){ %>
+                text-black
+            <% }else{ %>
+                text-white
+            <%} %> text-xl font-bold flex items-center gap-2">
+            <span>📅</span> Turno de Consulta <%- turno  %>
         </h2>
     </div>
     
@@ -9,24 +14,16 @@
         <div class="flex justify-between items-start mb-4">
             <div>
                 <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Paciente</p>
-                <p class="text-lg font-bold text-slate-800">Juan Pérez García</p>
+                <p class="text-lg font-bold text-slate-800"><%- nombre  %></p>
             </div>
-            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">Confirmado</span>
+            <span class="text-amber-50 <%- {'Generado': 'bg-generado','Fila': 'bg-fila','Atención': 'bg-atencion', 'Finalizado': 'bg-finalizado'}[estado] %> text-xs px-2 py-1 rounded-full font-bold"><%- estado  %></span>
         </div>
-
-        <div class="grid grid-cols-2 gap-4 mt-6">
-            <div class="bg-slate-50 p-3 rounded-lg">
-                <p class="text-xs text-slate-500">Hora</p>
-                <p class="font-bold text-blue-700">09:30 AM</p>
-            </div>
-            <div class="bg-slate-50 p-3 rounded-lg">
-                <p class="text-xs text-slate-500">Consultorio</p>
-                <p class="font-bold text-blue-700">A-12 (Piso 2)</p>
+        <div>
+            <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Semáforo de Manchester</p>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="w-4 h-4 <%- color  %> rounded-full"></span>
+                <span class="text-sm text-slate-700"><%- triage  %></span>
             </div>
         </div>
-
-        <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg active:transform active:scale-95">
-            Ver Detalles del Paciente
-        </button>
     </div>
 </div>

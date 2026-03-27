@@ -15,5 +15,7 @@ export const ENV = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     PORT: process.env.PORT || 3000,
     VIEWS:rutaViews,
-    PUBLIC:rutaPublic
+    PUBLIC:rutaPublic,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+    JWT_SECRET: process.env.JWT_SECRET_KEY
 }

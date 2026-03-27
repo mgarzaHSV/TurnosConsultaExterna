@@ -1,23 +1,17 @@
 /*  Bloque para importar las librerias para comenzar con la información */
 import express from 'express';
 import { ENV } from './src/config/env.config.js';
-import { MainRouter } from './provider.js';
+import { AuthRouter, CitaRouter, RecepcionRouter } from './provider.js';
+import { configMiddleware } from './src/config/init.config.js';
 
 const app = express(); 
-app.use(express.static(ENV.PUBLIC));
 
-// Configuración de vistas
-app.set('views', ENV.VIEWS);
-app.set('view engine', 'ejs');
+configMiddleware(app)
 
-
-/**
- * Middleare para gestionar las peticiones con body en formato JSON y URL encoded
-*/
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(MainRouter) // Rutas principales de la aplicación
+// Rutas de la aplicación
+app.use(AuthRouter)
+app.use(RecepcionRouter)
+app.use(CitaRouter)
 
 
 /**

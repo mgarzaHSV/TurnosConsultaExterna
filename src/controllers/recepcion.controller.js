@@ -1,8 +1,15 @@
-class recepcionController {
+export class RecepcionController {
+    constructor (RecepcionService, CitaService){
+        this.RecepcionService = RecepcionService;
+        this.CitaService = CitaService;
+    }
 
-    consultarRecepcion(req, res){
-        res.send('Consulta de recepcion realizada');
+    getHTMLDashboard = async ( req, res ) =>{
+        const user = req.session.user;
+        if (!user) {
+            return res.redirect('/login');
+        }
+        const data = await this.CitaService.getAllCitas()
+        res.render('recepcion', {user ,turnos: data});
+    }
 }
-
-
-export recepcionController
