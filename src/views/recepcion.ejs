@@ -43,12 +43,16 @@
                     <div class="space-y-4">
                         <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Datos Generales</h3>
                         <div>
-                            <label class="block text-sm text-slate-600 mb-1">Nombre Completo</label>
-                            <input id="input-name" type="text" placeholder="Ricardo M. Lopez" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                            <label class="block text-sm text-slate-600 mb-1">Nombre</label>
+                            <input id="input-name" type="text" placeholder="Ricardo" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
                         </div>
                         <div>
-                            <label class="block text-sm text-slate-600 mb-1">Número de Turno (Auto)</label>
-                            <input id="input-turn" type="text" value="T-102" readonly class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors font-mono font-bold">
+                            <label class="block text-sm text-slate-600 mb-1">Apellido Paterno</label>
+                            <input id="input-firstName" type="text" placeholder="Garza" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Apellido Materno</label>
+                            <input id="input-lastName" type="text" placeholder="Perez" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -138,7 +142,6 @@
             </div>
         </section>
     </dialog>
-
-
+    <script src="/js/cita.js"></script>
 </body>
 <%- include('partials/footer') %>

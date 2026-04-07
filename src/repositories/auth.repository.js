@@ -1,7 +1,16 @@
 export class AuthRepository{
-    constructor(){}
+    constructor(dataBase){
+        this.dataBase = dataBase
+    }
 
-    verifyUserAndPassword = async (user) =>{
-        return {username: 'MGARZA', nombre: 'Milton Garza', perfil: 'ADMINISTRADOR'}
+    findUserByUsername = async (user) =>{
+        const query = `SELECT * FROM usuario (nolock) WHERE nombreUsuario = '${user}'`
+        try{
+            const resultado = await this.dataBase.consultar(query)
+            return resultado[0]
+        }catch{
+            console.error("Error al ejecutar la query")
+            return null
+        }
     }
 }

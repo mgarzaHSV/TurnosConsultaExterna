@@ -2,6 +2,7 @@
 
 export class CitaRepository {
 
+    /*
     citas = [
             { id: 1, paciente: 'Juan Pérez', triage: 'Urgente', estatus: 'Generado' },
             { id: 2, paciente: 'María Gómez', triage: 'No urgente', estatus: 'Fila' },
@@ -9,17 +10,45 @@ export class CitaRepository {
             { id: 4, paciente: 'Ricardo Hernandez', triage: 'Normal', estatus: 'Atención' },
             { id: 5, paciente: 'Eunice Garza', triage: 'Muy urgente', estatus: 'Finalizado' }
         ];
+        */
 
-    constructor() {
+    constructor(dataBase) {
+        this.dataBase = dataBase
     }
 
     getAllCitas = async () => {
-        return this.citas
+        const query = `SELECT * FROM cita WHERE estatus IN ('01')`
+        try{
+            const citas = await this.dataBase.consultar(query)
+            console.log(citas)
+            return citas
+        }catch (error){
+            console.error("Ocurrio un error al intentar consultar citas")
+            return null 
+        }
     }
 
     createCita = async (citaData) => {
-        const newCita = { id: this.citas.length + 1, ...citaData };
-        this.citas.push(newCita);
+        
+        const query = `INSERT INTO CITA VALUES (
+                                                'CAST(GETDATE() AS DATE)', 
+                                                CAST(GETDATE() AS TIME), 
+                                                NULL, 
+                                                NULL,
+                                                NULL,
+                                                1,
+                                                '01',
+                                                '1',
+                                                NULL,
+                                                NULL,
+                                                NULL,
+                                                NULL,
+                                                1,
+                                                3,
+                                                NULL,
+                                                NULL,
+                                                NULL)`
+                                                
         return newCita;
     }
     

@@ -16,21 +16,25 @@ export class AuthService{
         if (!isValid) {
             throw new Error('Token inválido');
         }
-        
-        const userVerify = await this.AuthRepository.verifyUserAndPassword(user, password);
-        if (!userVerify) return false;
-        const token = jwt.sign(
-            {
-            username: userVerify.username,
-            nombre: userVerify.nombre,
-            tipo_usr: userVerify.perfil,
-            },
-            ENV.JWT_SECRET,
-            {
-            expiresIn: "6h", // 1 hour token expiration
-            }
-        );
-        return token;
-        //return await this.AuthRepository.consultarUsuario(validateUser);
+        const userExists = await this.AuthRepository.findUserByUsername(user);
+        if(!userExists) return false;
+
+        const passwordMatch = await bcrypt.compare(password, userExists.password);
+
+        if(userExists.nombreUsuario === user && passwordMatch) {
+            const token = jwt.sign(
+                {
+                username: userExists.username,
+                nombre: userExists.nombre,
+                tipo_usr: userExists.perfil,
+                },
+                ENV.JWT_SECRET,
+                {
+                expiresIn: "6h", // 1 hour token expiration
+                }
+            );
+            return token;
+        };
+        return false;
     }
 }

@@ -17,5 +17,9 @@ export const ENV = {
     VIEWS:rutaViews,
     PUBLIC:rutaPublic,
     SESSION_SECRET: process.env.SESSION_SECRET,
-    JWT_SECRET: process.env.JWT_SECRET_KEY
+    JWT_SECRET: process.env.JWT_SECRET_KEY,
+    DB_USER:process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_NAME: process.env.DB_NAME,
+    DB_URL: process.env.DB_URL
 }

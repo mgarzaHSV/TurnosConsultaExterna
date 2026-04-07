@@ -1,6 +1,7 @@
 export class CitaService {
-    constructor(CitaRepository){
+    constructor(CitaRepository, PacienteRepository){
         this.CitaRepository = CitaRepository;
+        this.PacienteRepository = PacienteRepository
     }
 
     getAllCitas = async () => {
@@ -8,7 +9,9 @@ export class CitaService {
     }
 
     createCita = async (citaData) => {
-        const newCita = await this.CitaRepository.createCita(citaData);
+        const { id,nobre,apellidoPaterno, apellidoMaterno, triage, edad, sexo, signosVitales } = citaData
+        console.log(citaData)
+        const newCita = await this.CitaRepository.createCita({id, paciente, triage, edad, sexo, signosVitales});
         return newCita;
     }
 

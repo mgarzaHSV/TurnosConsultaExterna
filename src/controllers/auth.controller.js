@@ -5,7 +5,6 @@ export class AuthController {
     }
 
     loginPage = async (req, res) =>{
-        console.log(req.session);
         if(req.session !== undefined && req.session.user !== null){
             const roles = {
                 'ADMINISTRADOR': '/recepcion',
@@ -14,7 +13,6 @@ export class AuthController {
                 'Medico': '/mesero',
                 'Pantalla': '/pantalla'
             }
-            console.log(req.session.user.tipo_usr)
             return res.redirect(roles[req.session.user.tipo_usr]);
         }
         const sessionKey = await this.AuthService.createTemporalCredential();
@@ -33,12 +31,11 @@ export class AuthController {
         const {username, password} = req.body;
         try {
             const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
-            if (result != false)
+            if (result !== false)
                 res
                 .cookie("access_token", result, { httpOnly: true })
                 .json({ status: 200, mensaje: "Login exitoso" });
             else res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
-            //res.json({ message: result });
         } catch (error) {
             console.error(error);
             res.status(401).json({ error: error.message });
