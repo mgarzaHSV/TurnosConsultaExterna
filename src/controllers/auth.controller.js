@@ -1,6 +1,9 @@
+/** @typedef {import('../services/auth.service.js').AuthService} AuthService */
+
 export class AuthController {
     
     constructor (AuthService){
+        /** @type {AuthService} */
         this.AuthService = AuthService;
     }
 
@@ -8,11 +11,12 @@ export class AuthController {
         if(req.session !== undefined && req.session.user !== null){
             const roles = {
                 'ADMINISTRADOR': '/recepcion',
-                'Recepcion': '/',
-                'Caja': '/cocina',
-                'Medico': '/mesero',
+                'Recepcion': '/recepcion',
+                'Caja': '/caja',
+                'Medico': '/medico',
                 'Pantalla': '/pantalla'
             }
+            console.log(req.session.user.tipo_usr);
             return res.redirect(roles[req.session.user.tipo_usr]);
         }
         const sessionKey = await this.AuthService.createTemporalCredential();

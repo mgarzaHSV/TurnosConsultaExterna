@@ -1,5 +1,3 @@
-
-
 export class CitaRepository {
 
     /*
@@ -17,10 +15,13 @@ export class CitaRepository {
     }
 
     getAllCitas = async () => {
-        const query = `SELECT * FROM cita WHERE estatus IN ('01')`
+        const query = `SELECT 
+                                        * 
+                        FROM			CITA (nolock)
+                        WHERE			estatus = '01'
+                        ORDER BY		manchester,fechaCreacion,horaCreacion`
         try{
             const citas = await this.dataBase.consultar(query)
-            console.log(citas)
             return citas
         }catch (error){
             console.error("Ocurrio un error al intentar consultar citas")
@@ -28,28 +29,62 @@ export class CitaRepository {
         }
     }
 
-    createCita = async (citaData) => {
-        
-        const query = `INSERT INTO CITA VALUES (
-                                                'CAST(GETDATE() AS DATE)', 
-                                                CAST(GETDATE() AS TIME), 
-                                                NULL, 
-                                                NULL,
-                                                NULL,
-                                                1,
-                                                '01',
-                                                '1',
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                NULL,
-                                                1,
-                                                3,
-                                                NULL,
-                                                NULL,
-                                                NULL)`
-                                                
-        return newCita;
+    createCita = async ({pacienteGuardado, triage}) => {
+        /*const query = `INSERT INTO CITA (
+                                        fechaCreacion,
+                                        horaCreacion,
+                                        turno,
+                                        estatus,
+                                        manchester,
+                                        idPaciente,
+                                        idUsuarioCrea
+                                        )
+                                        OUTPUT INSERTED.idCita
+        VALUES                          (
+                                        CAST(GETDATE() AS DATE),
+                                        CAST(GETDATE() AS TIME), 
+                                        (SELECT ISNULL(MAX(turno), 0) + 1 FROM CITA WHERE CAST(fechaCreacion AS DATE) = CAST(GETDATE() AS DATE)),
+                                        ${triage},
+                                        '1',
+                                        ${pacienteGuardado.idPaciente},
+                                        3
+                                        )`*/
+        const query = `DECLARE @turno INT;
+
+                    BEGIN TRAN;
+
+                    SELECT @turno = ISNULL(MAX(turno), 0) + 1
+                    FROM CITA WITH (UPDLOCK, HOLDLOCK)
+                    WHERE fechaCreacion = CAST(GETDATE() AS DATE);
+
+                    INSERT INTO CITA (
+                        fechaCreacion,
+                        horaCreacion,
+                        turno,
+                        estatus,
+                        manchester,
+                        idPaciente,
+                        idUsuarioCrea
+                    )
+                    OUTPUT INSERTED.idCita
+                    VALUES (
+                        CAST(GETDATE() AS DATE),
+                        CAST(GETDATE() AS TIME(0)),
+                        @turno,
+                        '01',
+                        ${triage},
+                        ${pacienteGuardado.idPaciente},
+                        3
+                    );
+
+                    COMMIT;`
+        try {
+            const result = await this.dataBase.consultar(query)
+            return result[0]
+        } catch (error) {
+            console.error("Ocurrio un error al intentar crear la cita")
+            return null   
+        }
     }
     
     getCitaById = async (id) => {
@@ -63,5 +98,20 @@ export class CitaRepository {
             return this.citas[index];
         }
         return null;
+    }
+
+    getCitasPendientesCobro = async ()=>{
+        const query = `SELECT 
+                                        *
+                        FROM			CITA (nolock)
+                        WHERE			estatus = '01'
+                        ORDER BY		manchester,fechaCreacion,horaCreacion`
+        try{
+            const citas = await this.dataBase.consultar(query)
+            return citas
+        }catch (error){
+            console.error("Ocurrio un error al intentar consultar citas")
+            return null 
+        }
     }
 }

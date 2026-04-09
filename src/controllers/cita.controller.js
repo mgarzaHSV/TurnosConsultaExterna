@@ -9,10 +9,7 @@ export class CitaController {
     }
 
     createCita = async (req, res) => {
-        console.log(req.body)
-        // Aquí iría la lógica para crear una nueva cita en la base de datos
         const newCita = await this.CitaService.createCita(req.body);
-        console.log(newCita)
         if (newCita) {
             res.status(201).json({ message: 'Cita creada exitosamente', cita: newCita });
         } else {

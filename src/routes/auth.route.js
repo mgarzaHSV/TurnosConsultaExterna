@@ -1,6 +1,15 @@
 import express from 'express';
 
-export const authRouter = (AuthController)=>{
+/** @typedef {import('../controllers/auth.controller.js').AuthController} AuthController*/
+
+/**
+ * 
+ * @param {*} AuthController 
+ * @returns 
+ */
+export const authRouter = (
+    /** @type {AuthController}*/ 
+    AuthController)=>{
     const router = express.Router();
 
     router.get('/login', AuthController.loginPage);
