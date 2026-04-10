@@ -1,21 +1,19 @@
 <div class="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-    <div id="status-header-color" class="h-3 bg-yellow-500"></div>
-    
+    <div id="status-header-color" class="h-3 <%- color %>"></div>
     <div class="p-8">
         <div class="flex justify-between items-start mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800 display-name"><%- nombre  %></h2>
-                <p class="text-slate-500">T<%- turno%><span class="display-age"><%= edad %></span> años</p>
+                <p class="text-slate-500">TURNO: <%- turno %> • EDAD: <span class="display-age"><%= edad %></span> años</p>
             </div>
             <span id="status-triage-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-slate-100 text-slate-600">
-                Urgente
+                <%= estatus  %>
             </span>
         </div>
 
         <div class="mb-8">
             <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Cambiar Estatus</h3>
             <div class="space-y-2">
-                <!-- Status Buttons -->
                 <button onclick="setStatus(this, 'Pendiente')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
                     <span class="font-medium">Pendiente</span>
                     <i data-lucide="check-circle" class="w-5 h-5"></i>

@@ -34,7 +34,7 @@ const cajaRepository = new CajaRepository(baseDatos)
 const authService = new AuthService(authRepository)
 const recepcionService = new RecepcionService(recepcionRepository)
 const citaService = new CitaService(citaRepository, pacienteRepository)
-const cajaService = new CajaService(cajaRepository, citaRepository)
+const cajaService = new CajaService(cajaRepository, citaRepository, pacienteRepository)
 
 // Instancias de controladores
 const authController = new AuthController(authService)

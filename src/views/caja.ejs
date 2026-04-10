@@ -1,47 +1,27 @@
-<%- include( 'partials/head', {titulo: 'Caja - Turnos'}) %>
+<%- include( 'partials/head', {titulo: 'Caja - Turnos Consulta'}) %>
 <%- include('partials/header') %>
-
-    <!-- 3. STATUS MANAGER VIEW -->
-    <section id="view-status" class="view-section hidden-view min-h-screen bg-slate-100 p-8 flex items-center justify-center">
-        <div class="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-            <div id="status-header-color" class="h-3 bg-yellow-500"></div>
-            
-            <div class="p-8">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800 display-name">Ricardo M. Lopez</h2>
-                        <p class="text-slate-500">ID: #492-A • <span class="display-age">34</span> años</p>
-                    </div>
-                    <span id="status-triage-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-slate-100 text-slate-600">
-                        Urgente
-                    </span>
-                </div>
-
-                <div class="mb-8">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Cambiar Estatus</h3>
-                    <div class="space-y-2">
-                        <!-- Status Buttons -->
-                        <button onclick="setStatus(this, 'Pendiente')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
-                            <span class="font-medium">Pendiente</span>
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-                        <button onclick="setStatus(this, 'Proyectada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                            <span class="font-medium">Proyectada</span>
-                        </button>
-                        <button onclick="setStatus(this, 'Asignada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                            <span class="font-medium">Asignada</span>
-                        </button>
-                        <button onclick="setStatus(this, 'Finalizada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                            <span class="font-medium">Finalizada</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="text-center text-xs text-slate-400">
-                    Última actualización: Hace un momento
-                </div>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-slate-800 mb-6">Caja</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% turnos.forEach(turno => { %>
+                    <%- include('components/componenteCaja',{
+                        nombre: turno.paciente,
+                        estado: turno.estatus,
+                        turno: 'T-' + turno.turno,
+                        edad: turno.edad,
+                        estatus: turno.estatus,
+                        triage: {
+                            '1': 'Inmediato',
+                            '2': 'Muy Urgente',
+                            '3': 'Urgente',
+                            '4': 'Normal',
+                            '5': 'No urgente'
+                        }[turno.manchester],
+                        color: turno.color
+                    })  %>
+                <%})  %>
             </div>
-        </div>
-    </section>
+
+    </div>
     <script src="/js/caja.js"></script>
 <%- include('partials/header') %>

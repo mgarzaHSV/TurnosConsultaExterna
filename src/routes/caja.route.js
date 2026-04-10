@@ -11,5 +11,7 @@ export const cajaRouter = (CajaController)=>{
 
     router.get('/caja', CajaController.cajaPage);
 
+    router.post('/caja/update-cita-estatus',CajaController.registrarPago)
+
     return router
 }

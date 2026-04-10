@@ -114,4 +114,16 @@ export class CitaRepository {
             return null 
         }
     }
+
+    actualizarEstatus = async ({usuario, estatusCita, idCita= {}, turno})=>{
+        const query = `UPDATE CITA SET estatus = '${estatusCita}', idUsuarioCobra = 3 OUTPUT INSERTED.idCita WHERE idCita = 13`
+        console.log(query)
+        try {
+            const resultado = await this.dataBase.consultar(query)
+            if(!resultado[0]) return null
+            return resultado[0]
+        } catch (error) {
+            console.error("Error al intentar actualizar el estatus")
+        }
+    }
 }

@@ -1,7 +1,8 @@
-        // Status Selection
+// Status Selection
+// Status Selection
 function setStatus(btnElement, status) {
-    // Reset all status buttons
-    document.querySelectorAll('.status-btn').forEach(btn => {
+    const buttonGroup = btnElement.parentElement;
+    buttonGroup.querySelectorAll('.status-btn').forEach(btn => {
         btn.className = 'status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all';
         const icon = btn.querySelector('svg');
         if(icon) icon.remove();
@@ -11,4 +12,24 @@ function setStatus(btnElement, status) {
     btnElement.className = 'status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all';
     btnElement.innerHTML += `<i data-lucide="check-circle" class="w-5 h-5"></i>`;
     lucide.createIcons();
+
+
+
+    fetch(`/caja/update-cita-estatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            turno: btnElement.dataset.turno,
+            estatus: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Estatus actualizado:', data);
+    })
+    .catch(error => {
+        console.error('Error al actualizar estatus:', error);
+    });
 }
