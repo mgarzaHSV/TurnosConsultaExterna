@@ -25,6 +25,6 @@ export class RecepcionController {
             return res.redirect('/login');
         }
         const data = await this.CitaService.getAllCitas()
-        res.render('recepcion', {user ,turnos: data});
+        res.render('recepcion', {user: req.session.user.nombre ,turnos: data});
     }
 }

@@ -4,12 +4,13 @@ const state = {
     vitals: { bp: '120/80', hr: '85', temp: '37.5', o2: '98' }
 };
 
+// --- CONSTANTS & MOCK DATA ---
 const TRIAGE_DATA = {
-    red: { color: 'red', hex: '#ef4444', name: 'Inmediato' },
-    orange: { color: 'orange', hex: '#f97316', name: 'Muy Urgente' },
-    yellow: { color: 'yellow', hex: '#eab308', name: 'Urgente' },
-    green: { color: 'green', hex: '#22c55e', name: 'Estándar' },
-    blue: { color: 'blue', hex: '#3b82f6', name: 'No Urgente' }
+    "1": { color: 'red', hex: '#ef4444', name: 'Resucitación' },
+    "2": { color: 'orange', hex: '#f97316', name: 'Emergencia' },
+    "3": { color: 'yellow', hex: '#eab308', name: 'Urgencia' },
+    "4": { color: 'green', hex: '#22c55e', name: 'Urgencia Menor' },
+    "5": { color: 'blue', hex: '#3b82f6', name: 'Sin urgencia' }
 };
 
 function saveAndGoToQueue(){
@@ -28,8 +29,9 @@ function saveAndGoToQueue(){
 
 })      }).then(res => res.json())
         .then(data => {
-            if(data.success){
-                alert('Paciente registrado con éxito. Turno: ');
+            console.log(data)
+            if(data){
+                alert(data.message);
                 document.querySelector('dialog').close();
                 // Aquí podrías agregar lógica para actualizar la lista de turnos sin recargar la página
             } else {

@@ -8,17 +8,6 @@ export class AuthController {
     }
 
     loginPage = async (req, res) =>{
-        if(req.session !== undefined && req.session.user !== null){
-            const roles = {
-                'ADMINISTRADOR': '/recepcion',
-                'Recepcion': '/recepcion',
-                'Caja': '/caja',
-                'Medico': '/medico',
-                'Pantalla': '/pantalla'
-            }
-            console.log(req.session.user.tipo_usr);
-            return res.redirect(roles[req.session.user.tipo_usr]);
-        }
         const sessionKey = await this.AuthService.createTemporalCredential();
         req.session.api_token = sessionKey;
 
@@ -33,12 +22,21 @@ export class AuthController {
 
     verifyUserAndPassword = async (req, res) =>{
         const {username, password} = req.body;
+            const roles = {
+                1: '/recepcion',
+                2: '/recepcion',
+                3: '/caja',
+                4: '/medico',
+                5: '/pantalla'
+            }
         try {
             const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
-            if (result !== false)
+            if (result !== false){
+                const usuario = await this.AuthService.getDataOfUser(username)
                 res
                 .cookie("access_token", result, { httpOnly: true })
-                .json({ status: 200, mensaje: "Login exitoso" });
+                .json({ status: 200, mensaje: "Login exitoso",otraProdieda: "Texto de prueba", href: roles[usuario.idRol]});
+            }
             else res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
         } catch (error) {
             console.error(error);

@@ -5,8 +5,16 @@ export class Database {
     #dbName
     #userName
     #password
-    #connection = null
+    /** @type {sql.ConnectionPool | null} */
+    #connection
 
+    /**
+     * 
+     * @param {string} url 
+     * @param {string} dbName 
+     * @param {string} userName 
+     * @param {string} password 
+     */
     constructor(url, dbName, userName, password) {
         this.#url = url
         this.#dbName = dbName
@@ -35,8 +43,6 @@ export class Database {
                     trustServerCertificate: true
                 }
             })
-
-            console.log("Conexión correcta")
             this.#connection = pool
             return pool
         } catch (error) {
@@ -45,6 +51,12 @@ export class Database {
         }
     }
 
+    /**
+     * 
+     * @param {string} query 
+     * @param {Object} params 
+     * @returns 
+     */
     async consultar(query, params = {}) {
         try {
             const pool = await this.connect()

@@ -23,12 +23,11 @@ export class CajaController {
     }
 
     registrarPago = async (req, res ) =>{
-        const { turno, estatus } = req.body
-        const usuario = req.session.user.nombre
-        const idCita = 13
+        const { turno, estatus, idCita } = req.body
+        const usuario = req.session.user.username
         try {
             await this.CajaService.registrarPago({usuario,estatus, turno, idCita })
-            res.json({ success: true, message: 'Estatus actualizado correctamente' });
+            res.status(200).json({ success: true, message: 'Estatus actualizado correctamente' });
         } catch (error) {
             console.error('Error al actualizar estatus:', error);
             res.status(500).json({ success: false, message: 'Error al actualizar estatus' });

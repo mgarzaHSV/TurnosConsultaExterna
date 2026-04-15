@@ -1,7 +1,7 @@
 /*  Bloque para importar las librerias para comenzar con la información */
 import express from 'express';
 import { ENV } from './src/config/env.config.js';
-import { AuthRouter, CajaRouter, CitaRouter, RecepcionRouter } from './provider.js';
+import { AuthRouter, CajaRouter, CitaRouter, MedicoRouter, RecepcionRouter, TurnoRouter } from './provider.js';
 import { configMiddleware } from './src/config/init.config.js';
 
 const app = express(); 
@@ -13,6 +13,8 @@ app.use(AuthRouter)
 app.use(RecepcionRouter)
 app.use(CitaRouter)
 app.use(CajaRouter)
+app.use(TurnoRouter)
+app.use(MedicoRouter)
 
 
 /**

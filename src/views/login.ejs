@@ -27,24 +27,30 @@
 
             const button = document.querySelector('button[type="submit"]');
             button.addEventListener('click', (e) => {
-                e.preventDefault(); // Evitar el envío tradicional del formulario
+                e.preventDefault();
+
                 fetch('/api/v1/login', {
                     method: 'POST',
                     headers: {
-                        'X-SRF-TOKEN': getCookie('X-SRF-TOKEN') // Enviar el token en el header
+                        'X-SRF-TOKEN': getCookie('X-SRF-TOKEN')
                     },
-                    body: new URLSearchParams(new FormData(document.querySelector('form'))) // Enviar los datos del formulario
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.href = '/recepcion'; // Redirigir al dashboard si el login es exitoso
-                    } else {
-                        alert('Error de autenticación'); // Mostrar un mensaje de error si el login falla
-                }}).catch(error => {
+                    body: new URLSearchParams(new FormData(document.querySelector('form'))),
+                    credentials: "include"
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error de autenticación');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    window.location.href = data.href;
+                })
+                .catch(error => {
                     console.error('Error:', error);
-                    alert('Error de red'); // Mostrar un mensaje de error si hay un problema de red
+                    alert(error.message || 'Error de red');
                 });
-
-            })
+            });
             // Función auxiliar para leer cookies por nombre
             const getCookie = (name) => {
                 const value = `; ${document.cookie}`;

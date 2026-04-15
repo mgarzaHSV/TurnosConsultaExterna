@@ -1,0 +1,34 @@
+<%- include( 'partials/head', {titulo: 'Medicos Consulta'}) %>
+<%- include('partials/header' , {user}) %>
+<!-- 5. DOCTOR VIEW (Dashboard de Pacientes en Espera) -->
+    <section id="view-doctor" class="view-section hidden-view min-h-screen bg-gray-50 flex">
+        <div class="flex-1 p-8 md:p-10 overflow-y-auto">
+            <article>
+                <header class="flex justify-between items-center mb-10 border-b border-gray-200 pb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Pacientes en Atención</h1>
+                        <p class="text-gray-500 mt-1">Seleccione un paciente para finalizar la atención médica correspondiente</p>
+                    </div>
+                </header>
+    
+                <!-- CONTENEDOR DE TARJETAS DE PACIENTES -->
+                <div id="doctor-patients-atention-grid" class="flex flex-col gap-4">
+                </div>
+            </article>
+
+            <article>
+                <header class="flex justify-between items-center mb-10 border-b border-gray-200 pb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Pacientes en Espera</h1>
+                        <p class="text-gray-500 mt-1">Seleccione un paciente para iniciar la atención médica correspondiente</p>
+                    </div>
+                </header>
+    
+                <!-- CONTENEDOR DE TARJETAS DE PACIENTES -->
+                <div id="doctor-patients-grid" class="flex flex-col gap-4">
+                </div>
+            </article>
+        </div>
+    </section>
+<%- include('partials/footer') %>
+<script src="/js/medico.js"></script>

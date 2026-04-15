@@ -38,7 +38,7 @@ export class CajaService{
             }
 
             return {
-                id: element.turno,
+                idCita: element.idCita,
                 paciente: `${paciente.nombrePaciente} ${paciente.appPaciente} ${paciente.apmPaciente}`,
                 triage: element.manchester,
                 estatus: dictionary[element.estatus],
@@ -59,7 +59,7 @@ export class CajaService{
             "Finalizada": "04" 
         }[estatus]
         try{
-            const resultado = await this.CitaRepository.actualizarEstatus({usuario, estatusCita, idCita, turno})
+            const resultado = await this.CitaRepository.pagarTurnoPaciente({usuario, estatusCita, idCita, turno})
             if(!resultado) return null
             return resultado
         }catch (error){

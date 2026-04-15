@@ -14,18 +14,12 @@
         <div class="mb-8">
             <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Cambiar Estatus</h3>
             <div class="space-y-2">
-                <button onclick="setStatus(this, 'Pendiente')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
+                <button onclick="setStatus(this, 'Pendiente',<%= idCita %>)" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
                     <span class="font-medium">Pendiente</span>
                     <i data-lucide="check-circle" class="w-5 h-5"></i>
                 </button>
-                <button onclick="setStatus(this, 'Proyectada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                    <span class="font-medium">Proyectada</span>
-                </button>
-                <button onclick="setStatus(this, 'Asignada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                    <span class="font-medium">Asignada</span>
-                </button>
-                <button onclick="setStatus(this, 'Finalizada')" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
-                    <span class="font-medium">Finalizada</span>
+                <button onclick="setStatus(this, 'Proyectada',<%= idCita %>)" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
+                    <span class="font-medium">Pagada</span>
                 </button>
             </div>
         </div>

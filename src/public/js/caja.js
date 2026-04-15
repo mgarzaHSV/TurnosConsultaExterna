@@ -1,6 +1,5 @@
 // Status Selection
-// Status Selection
-function setStatus(btnElement, status) {
+function setStatus(btnElement, status,idCita) {
     const buttonGroup = btnElement.parentElement;
     buttonGroup.querySelectorAll('.status-btn').forEach(btn => {
         btn.className = 'status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all';
@@ -21,13 +20,15 @@ function setStatus(btnElement, status) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            idCita,
             turno: btnElement.dataset.turno,
             estatus: status
         })
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Estatus actualizado:', data);
+        alert(data.message)
+        location.reload()
     })
     .catch(error => {
         console.error('Error al actualizar estatus:', error);

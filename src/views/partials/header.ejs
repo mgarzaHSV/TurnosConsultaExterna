@@ -3,8 +3,8 @@
         <a href="/"><img src="" alt=""></a>
     </section>
     <section class="flex items-center gap-4">
-        <span class="text-white">
-            <%= user ? user.name : 'Invitado' %>
+        <span class="text-white">Nombre del Usuario:
+            <%= user %>
         </span>
         <button onclick="window.location.href='/logout'" 
                 class="px-4 py-2 bg-red-500 hover:bg-red-700 text-white rounded">
