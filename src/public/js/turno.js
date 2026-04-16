@@ -173,3 +173,28 @@ setInterval(() => {
 // Initial setup
 lucide.createIcons();
 updateDisplays();
+
+// crea el audio (puede ser mp3, wav, etc.)
+const notificationSound = new Audio('/sounds/notification.mp3')
+
+socket.on("turno_pagado", () => {
+    location.reload();
+});
+
+socket.on("turno_asignado", () => {
+    // reproducir sonido
+    notificationSound.play().catch(err => {
+        console.log("No se pudo reproducir el audio:", err);
+    });
+    location.reload();
+});
+
+
+socket.on("turno_finalizado", () => {
+    // reproducir sonido
+    notificationSound.play().catch(err => {
+        console.log("No se pudo reproducir el audio:", err);
+    });
+    location.reload();
+});
+

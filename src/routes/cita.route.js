@@ -1,5 +1,12 @@
+/** @typedef {import('../controllers/cita.controller.js').CitaController} CitaController */
+
 import express from 'express';
 
+/**
+ * 
+ * @param {CitaController} citaController 
+ * @returns 
+ */
 export const citaRoute = (citaController) =>{
     const router = express.Router();
 
@@ -8,11 +15,6 @@ export const citaRoute = (citaController) =>{
     router.post('/citas', citaController.createCita);
 
     router.get('/citas/:id', citaController.getCitaById);
-
-    router.put('/citas/:id', citaController.updateCita);
-    
-    router.delete('/citas/:id', citaController.deleteCita);
-
 
     return router;
 }

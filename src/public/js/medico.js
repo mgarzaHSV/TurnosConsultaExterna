@@ -222,6 +222,10 @@ function updateDisplays() {
     lucide.createIcons();
 }
 
+socket.on("turno_pagado", () => {
+location.reload();
+});
+
 
 
 updateDisplays();

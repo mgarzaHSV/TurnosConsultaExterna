@@ -1,30 +1,44 @@
-/*  Bloque para importar las librerias para comenzar con la información */
 import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+
 import { ENV } from './src/config/env.config.js';
 import { AuthRouter, CajaRouter, CitaRouter, MedicoRouter, RecepcionRouter, TurnoRouter } from './provider.js';
 import { configMiddleware } from './src/config/init.config.js';
 
 const app = express(); 
 
-configMiddleware(app)
+configMiddleware(app);
 
-// Rutas de la aplicación
-app.use(AuthRouter)
-app.use(RecepcionRouter)
-app.use(CitaRouter)
-app.use(CajaRouter)
-app.use(TurnoRouter)
-app.use(MedicoRouter)
+// Rutas
+app.use(AuthRouter);
+app.use(RecepcionRouter);
+app.use(CitaRouter);
+app.use(CajaRouter);
+app.use(TurnoRouter);
+app.use(MedicoRouter);
 
-
-/**
- * Middleare para gestionar las peticiones de ruta que no se encuentrar y mostrar pagina de error 404
- */
-app.use((req, res, next) => {
+// 404
+app.use((req, res) => {
     res.status(404).send('404 Not Found - La página que buscas no existe.');
 });
 
+// 🔥 Socket setup
+const server = http.createServer(app);
 
-// Inicializar servidor en el puerto definido en el archivo de configuración
-app.listen(ENV.PORT);
-console.log("Servidor corrriendo en puerto", ENV.PORT)
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
+
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  console.log('Cliente conectado:', socket.id);
+});
+
+// iniciar servidor
+server.listen(ENV.PORT, () => {
+  console.log("Servidor corriendo en puerto", ENV.PORT);
+});

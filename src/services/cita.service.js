@@ -58,9 +58,4 @@ export class CitaService {
         const cita = await this.CitaRepository.getCitaById(id);
         return cita;
     }
-
-    updateCita = async (id, citaData) => {
-        const updatedCita = await this.CitaRepository.updateCita(id, citaData);
-        return updatedCita;
-    }
 }

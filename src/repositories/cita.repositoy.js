@@ -30,25 +30,6 @@ export class CitaRepository {
     }
 
     createCita = async ({pacienteGuardado, triage}) => {
-        /*const query = `INSERT INTO CITA (
-                                        fechaCreacion,
-                                        horaCreacion,
-                                        turno,
-                                        estatus,
-                                        manchester,
-                                        idPaciente,
-                                        idUsuarioCrea
-                                        )
-                                        OUTPUT INSERTED.idCita
-        VALUES                          (
-                                        CAST(GETDATE() AS DATE),
-                                        CAST(GETDATE() AS TIME), 
-                                        (SELECT ISNULL(MAX(turno), 0) + 1 FROM CITA WHERE CAST(fechaCreacion AS DATE) = CAST(GETDATE() AS DATE)),
-                                        ${triage},
-                                        '1',
-                                        ${pacienteGuardado.idPaciente},
-                                        3
-                                        )`*/
         const query = `DECLARE @turno INT;
 
                     BEGIN TRAN;
@@ -89,15 +70,6 @@ export class CitaRepository {
     
     getCitaById = async (id) => {
         return this.citas.find(cita => cita.id === parseInt(id));
-    }
-
-    updateCita = async (id, citaData) => {
-        const index = this.citas.findIndex(cita => cita.id === parseInt(id));
-        if (index !== -1) {
-            this.citas[index] = { ...this.citas[index], ...citaData };
-            return this.citas[index];
-        }
-        return null;
     }
 
     getCitasPendientesCobro = async ()=>{

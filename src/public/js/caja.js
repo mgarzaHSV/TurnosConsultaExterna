@@ -34,3 +34,7 @@ function setStatus(btnElement, status,idCita) {
         console.error('Error al actualizar estatus:', error);
     });
 }
+
+socket.on("turno_creado", () => {
+location.reload();
+});

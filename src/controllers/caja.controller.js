@@ -27,6 +27,8 @@ export class CajaController {
         const usuario = req.session.user.username
         try {
             await this.CajaService.registrarPago({usuario,estatus, turno, idCita })
+            const io = req.app.get('io');
+            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente' });
             res.status(200).json({ success: true, message: 'Estatus actualizado correctamente' });
         } catch (error) {
             console.error('Error al actualizar estatus:', error);
