@@ -14,6 +14,8 @@ export const authRouter = (
 
     router.get('/login', AuthController.loginPage);
 
+    router.post('/logout', AuthController.logout);
+
     router.post('/api/v1/login', AuthController.verifyUserAndPassword);
 
     return router

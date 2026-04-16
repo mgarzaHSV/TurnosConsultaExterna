@@ -20,6 +20,11 @@ export class AuthController {
         res.render('login');
     }
 
+    logout = async (req, res) =>{
+        res.clearCookie('access_token');
+        res.json({ status: 200, mensaje: "Logout exitoso" });
+    }
+
     verifyUserAndPassword = async (req, res) =>{
         const {username, password} = req.body;
             const roles = {
