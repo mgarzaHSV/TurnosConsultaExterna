@@ -8,7 +8,57 @@ function refreshTurnsList(){
     ).then(response => response.json()).
     then(data =>{
         console.log(data)
+        const turnosAreas = document.getElementById('areaTurnos')
+        if(!turnosAreas) return null
+        turnosAreas.innerHTML = ''
 
+        const colores = {
+            '1': 'bg-inmediato',
+            '2': 'bg-muyUrgente',
+            '3': 'bg-urgente',
+            '4': 'bg-normal',
+            '5': 'bg-noUrgente'
+        }
+
+        const textos = {
+            '1': 'Inmediato',
+            '2': 'Muy Urgente',
+            '3': 'Urgente',
+            '4': 'Normal',
+            '5': 'No urgente'
+        }
+
+        const coloresEstatus = {'Generado': 'bg-generado','Fila': 'bg-fila','Atención': 'bg-atencion', 'Finalizado': 'bg-finalizado'}
+        
+        data.forEach(element =>{
+            element.color = colores[element.triage]
+            element.textoEstatus = textos[element.triage]
+            const component =  `<div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                                    <!--<div class="bg-blue-600 p-4">-->
+                                    <div class="${element.color} p-4">
+                                        <h2 class="${(element.color === 'bg-urgente' ? 'text-black' : 'text-white')} text-xl font-bold flex items-center gap-2">
+                                            <span>📅</span> Turno de Consulta ${element.turno}</h2>
+                                    </div>
+                                    
+                                    <div class="p-6">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <div>
+                                                <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Paciente</p>
+                                                <p class="text-lg font-bold text-slate-800">${element.nombre}</p>
+                                            </div>
+                                            <span class="text-amber-50 ${element.textoEstatus} text-xs px-2 py-1 rounded-full font-bold">${element.estado}</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Semáforo de Manchester</p>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="w-4 h-4 ${element.color} rounded-full"></span>
+                                                <span class="text-sm text-slate-700">${TRIAGE_DATA[element.triage].name}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`
+            turnosAreas.innerHTML += component;
+        })
     })
     .catch(error=>{
         console.log(error)
@@ -66,39 +116,6 @@ function selectTriage(colorKey, name) {
             if(check) check.remove();
         }
     });
-}
-
-
-function addTurnList(element, data){
-    const component =  `<div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
-                            <!--<div class="bg-blue-600 p-4">-->
-                            <div class="<%- color  %> p-4">
-                                <h2 class="<%if (color === 'bg-urgente'){ %>
-                                        text-black
-                                    <% }else{ %>
-                                        text-white
-                                    <%} %> text-xl font-bold flex items-center gap-2">
-                                    <span>📅</span> Turno de Consulta <%- turno  %>
-                                </h2>
-                            </div>
-                            
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Paciente</p>
-                                        <p class="text-lg font-bold text-slate-800"><%- nombre  %></p>
-                                    </div>
-                                    <span class="text-amber-50 <%- {'Generado': 'bg-generado','Fila': 'bg-fila','Atención': 'bg-atencion', 'Finalizado': 'bg-finalizado'}[estado] %> text-xs px-2 py-1 rounded-full font-bold"><%- estado  %></span>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Semáforo de Manchester</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="w-4 h-4 <%- color  %> rounded-full"></span>
-                                        <span class="text-sm text-slate-700"><%- triage  %></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`
 }
 
 refreshTurnsList()

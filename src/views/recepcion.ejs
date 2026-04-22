@@ -12,7 +12,7 @@
         <h2>Turnos activos</h2>
      </section>
      <hr class="my-4">
-     <section class="mt-8 flex flex-wrap gap-6 justify-center w-11/12">
+     <section id="areaTurnos" class="mt-8 flex flex-wrap gap-6 justify-center w-11/12">
         <% turnos.forEach(turno => { %>
             <%- include('components/componenteCita',{
                 nombre: turno.paciente,
