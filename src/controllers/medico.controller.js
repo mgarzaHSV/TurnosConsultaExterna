@@ -24,9 +24,13 @@ export class MedicoController {
         const userName = req.session.user.username
         const { idCita } = req.body
         const actualizado = await this.MedicoService.asignarMedicoPaciente({ idCita, userName })
-        const io = req.app.get('io');
-        io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente' });
-        res.json({ success: actualizado })
+        if(actualizado.code === 102 ){
+            res.json({codigo: actualizado.code, mensaje: actualizado.message})
+        }else{
+            const io = req.app.get('io');
+            io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente' });
+            res.json({codigo: actualizado.code, mensaje: actualizado.message})
+        }
     }
 
     consultarTurnosAsignados = async ( req , res ) =>{

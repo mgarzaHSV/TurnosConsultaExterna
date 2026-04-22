@@ -32,11 +32,13 @@ export class MedicoService{
     }
 
     asignarMedicoPaciente = async ({idCita, userName}) => {
+        const turnos = await this.CitaRepository.consultarTurnosActivosByUserName(userName)
+        if(turnos.length !== 0) return { code: 102, message: "Actualmente tiene un paciente en atención. Para asignar uno nuevo, debe finalizar la consulta en curso."}
         const resultado = await this.CitaRepository.asignarMedicoPaciente({userName,idCita})
-        return resultado
+        return {code: 103, message: "Paciente asignado correctamente", turno: resultado}
     }
 
-    consultaTurnosActivosByUserName = async ( userName) => {
+    consultaTurnosActivosByUserName = async ( userName ) => {
         const turnos = await this.CitaRepository.consultarTurnosActivosByUserName(userName)
         const mostrarCita = await Promise.all(
         turnos.map(async (element) => {

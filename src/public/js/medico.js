@@ -157,13 +157,13 @@ function atenderPaciente(btnPresionado) {
             idCita: idCita
         })
     }).then(response => response.json()).then(data=>{
-            if(data.success) {
-                    alert("Turno asigano con éxito")
-                    renderDoctorCards();
-                    renderDoctorAtentionCards();
-                } else {
-                    console.error('Error al asignar la atención');
-                }
+        if(data.codigo === 103) {
+            renderDoctorCards();
+            renderDoctorAtentionCards();
+            mensajeParaUsuario(data.mensaje, "success")
+        } else {
+            mensajeParaUsuario(data.mensaje, "error")
+        }
     }).catch(error => {
         console.error('Error en la solicitud:', error);
     });
@@ -182,11 +182,11 @@ function finalizarAtencion(btnPresionado){
         })
     }).then(response => response.json()).then(data => {
         if(data.success) {
-            alert("Atención finalizada con éxito")
+            mensajeParaUsuario("Atención finalizada con éxito", "success")
             renderDoctorCards();
             renderDoctorAtentionCards();
         } else {
-            console.error('Error al finalizar la atención');
+            mensajeParaUsuario('Error al finalizar la atención', "error")
         }
         })
     .catch(error => {
@@ -222,9 +222,22 @@ function updateDisplays() {
     lucide.createIcons();
 }
 
+function mensajeParaUsuario(mensaje, tipoIcon){
+    Swal.fire({
+        title: mensaje,
+        icon: tipoIcon,
+        showConfirmButton: false,
+        timer: tipoIcon === 'success' ? 2500 : 4500
+    });
+}
+
 socket.on("turno_pagado", () => {
 location.reload();
 });
+
+socket.on("turno_asignado",() =>{
+    //location.reload();
+})
 
 
 

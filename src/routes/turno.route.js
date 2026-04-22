@@ -12,7 +12,7 @@ import { requireAuth, requireRole } from '../middlewares/Authentication.js'
 export const turnoRouter = (TurnoController)=>{
     const router = route.Router()
     
-    router.get('/turnos',requireAuth,requireRole(['Pantalla','Administrador']),TurnoController.getTurnos)
+    router.get('/turnos',TurnoController.getTurnos)
 
     router.get('/api/turnos',TurnoController.getTodosTurnosActivos)
 

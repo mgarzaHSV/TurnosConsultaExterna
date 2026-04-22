@@ -1,14 +1,6 @@
-<%- include( 'partials/head', {titulo: 'Agregar Consulta'}) %>
+<%- include( 'partials/head', {titulo: 'Pantalla Turnos'}) %>
     <!-- 4. QUEUE / TURN VIEW (UPDATED TO FULL SCREEN LIST + MODAL) -->
     <section id="view-queue" class="view-section hidden-view min-h-screen bg-slate-900 relative overflow-hidden flex flex-col">
-        
-        <!-- BOTÓN DE PRUEBA (Solo para demo) -->
-        <div class="absolute top-8 right-8 z-40">
-            <button onclick="simularNuevoTurno()" class="bg-slate-700/50 hover:bg-slate-600 border border-slate-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 backdrop-blur-sm shadow-xl">
-                <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                Simular Siguiente Turno
-            </button>
-        </div>
         
         <!-- OVERLAY DE ANIMACIÓN: Modal sobre el contenido normal -->
         <div id="queue-modal" class="hidden h-screen absolute inset-0 z-50 flex items-center justify-center p-8 bg-slate-950/80 backdrop-blur-sm transition-all">
