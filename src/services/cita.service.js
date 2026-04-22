@@ -14,7 +14,8 @@ export class CitaService {
 
     getAllCitas = async () => {
     let citas = await this.CitaRepository.getAllCitas();
-
+    return citas
+    /*
     const mostrarCita = await Promise.all(
         citas.map(async (element) => {
             const paciente = await this.PacienteRepository.getPacienteById(element.idPaciente)
@@ -34,7 +35,7 @@ export class CitaService {
         })
     );
 
-    return mostrarCita;
+    return mostrarCita;*/
     }
     
     createCita = async (citaData) => {

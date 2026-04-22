@@ -35,17 +35,22 @@ export class AuthController {
                 5: '/pantalla'
             }
         try {
-            const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
+            const user ={
+                username: username,
+                password: password
+            }
+            const result = await this.AuthService.verifyUserAndPassword(user, req.cookies['X-SRF-TOKEN']);
             if (result !== false){
                 const usuario = await this.AuthService.getDataOfUser(username)
+                if(!usuario) return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
                 res
                 .cookie("access_token", result, { httpOnly: true })
-                .json({ status: 200, mensaje: "Login exitoso",otraProdieda: "Texto de prueba", href: roles[usuario.idRol]});
+                .json({ status: 200, mensaje: "Login exitoso",otraProdieda: "Texto de prueba", href: roles[usuario.rol.idRol]});
             }
             else res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
         } catch (error) {
-            console.error(error);
             res.status(401).json({ error: error.message });
+            console.error(error);
         }
     }
 }

@@ -28,7 +28,7 @@ export class PacienteRepository {
             paciente.idPaciente = result[0].idPaciente
             return paciente   
         } catch (error) {
-            console.log("Error al intentar registrar al paciente")
+            console.error("Error al intentar registrar al paciente")
             return null
         }
     }

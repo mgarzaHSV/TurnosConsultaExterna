@@ -11,6 +11,7 @@ export class CitaController {
 
     getAllCitas = async (req, res) => {
         const citas = await this.CitaService.getAllCitas();
+        console.log(citas)
         res.json(citas);
     }
 

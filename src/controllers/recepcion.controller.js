@@ -1,16 +1,15 @@
 /** @typedef {import('../services/recepcion.service.js').RecepcionService} RecepcionService */
-/** @typedef {import('../services/cita.service.js').CitaService} CitaService */
+/** @typedef {import('../services/turno.service.js').TurnoService} TurnoService */
+
 
 export class RecepcionController {
     /**
      * @param {RecepcionService} RecepcionService
-     * @param {CitaService} CitaService
+     * @param {TurnoService} TurnoService
      */
-    constructor (RecepcionService, CitaService){
+    constructor (RecepcionService, TurnoService){
         this.RecepcionService = RecepcionService;
-
-        /** @type {CitaService} */
-        this.CitaService = CitaService;
+        this.TurnoService = TurnoService;
     }
 
     /**
@@ -24,7 +23,7 @@ export class RecepcionController {
         if (!user) {
             return res.redirect('/login');
         }
-        const data = await this.CitaService.getAllCitas()
+        const data = await this.TurnoService.consultarTurnosGeneradosActivos()
         res.render('recepcion', {user: req.session.user.nombre ,turnos: data});
     }
 }

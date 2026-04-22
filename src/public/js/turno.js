@@ -184,7 +184,7 @@ socket.on("turno_pagado", () => {
 socket.on("turno_asignado", () => {
     // reproducir sonido
     notificationSound.play().catch(err => {
-        console.log("No se pudo reproducir el audio:", err);
+        console.error("No se pudo reproducir el audio:", err);
     });
     location.reload();
 });
@@ -193,7 +193,7 @@ socket.on("turno_asignado", () => {
 socket.on("turno_finalizado", () => {
     // reproducir sonido
     notificationSound.play().catch(err => {
-        console.log("No se pudo reproducir el audio:", err);
+        console.error("No se pudo reproducir el audio:", err);
     });
     location.reload();
 });

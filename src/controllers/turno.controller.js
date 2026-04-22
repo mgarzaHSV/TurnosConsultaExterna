@@ -10,6 +10,11 @@ export class TurnoController {
         this.TurnoService = TurnoService
     }
 
+    getTurnosRegistradosActivos = async( req, res ) =>{
+        const turnosRegistrados = await this.TurnoService.consultarTurnosRegistradosActivos()
+        res.json(turnosRegistrados)
+    }
+
 
     getTurnos = async (req, res) =>{
         const data = await this.TurnoService.consultaTurnos()

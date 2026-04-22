@@ -52,7 +52,7 @@ const medicoService = new MedicoService(medicoRepository,citaRepository,paciente
 
 // Instancias de controladores
 const authController = new AuthController(authService)
-const recepcionController = new RecepcionController(recepcionService, citaService)
+const recepcionController = new RecepcionController(recepcionService, turnoService)
 const citaController = new CitaController(citaService)
 const cajaController = new CajaController(cajaService)
 const turnoController = new TurnoController(turnoService)

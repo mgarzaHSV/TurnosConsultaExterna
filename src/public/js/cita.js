@@ -1,17 +1,22 @@
-// State
-const state = {
-    triage: { color: 'yellow', name: 'Urgente', hex: '#eab308' },
-    vitals: { bp: '120/80', hr: '85', temp: '37.5', o2: '98' }
-};
+function refreshTurnsList(){
+    fetch('/api/turnos/estatus/generados',{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+    ).then(response => response.json()).
+    then(data =>{
+        console.log(data)
 
-// --- CONSTANTS & MOCK DATA ---
-const TRIAGE_DATA = {
-    "1": { color: 'red', hex: '#ef4444', name: 'Resucitación' },
-    "2": { color: 'orange', hex: '#f97316', name: 'Emergencia' },
-    "3": { color: 'yellow', hex: '#eab308', name: 'Urgencia' },
-    "4": { color: 'green', hex: '#22c55e', name: 'Urgencia Menor' },
-    "5": { color: 'blue', hex: '#3b82f6', name: 'Sin urgencia' }
-};
+    })
+    .catch(error=>{
+        console.log(error)
+    });
+}
+
+
+
 
 function saveAndGoToQueue(){
     fetch('/citas',{
@@ -29,7 +34,6 @@ function saveAndGoToQueue(){
 
 })      }).then(res => res.json())
         .then(data => {
-            console.log(data)
             if(data){
                 alert(data.message);
                 document.querySelector('dialog').close();
@@ -63,3 +67,38 @@ function selectTriage(colorKey, name) {
         }
     });
 }
+
+
+function addTurnList(element, data){
+    const component =  `<div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                            <!--<div class="bg-blue-600 p-4">-->
+                            <div class="<%- color  %> p-4">
+                                <h2 class="<%if (color === 'bg-urgente'){ %>
+                                        text-black
+                                    <% }else{ %>
+                                        text-white
+                                    <%} %> text-xl font-bold flex items-center gap-2">
+                                    <span>📅</span> Turno de Consulta <%- turno  %>
+                                </h2>
+                            </div>
+                            
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Paciente</p>
+                                        <p class="text-lg font-bold text-slate-800"><%- nombre  %></p>
+                                    </div>
+                                    <span class="text-amber-50 <%- {'Generado': 'bg-generado','Fila': 'bg-fila','Atención': 'bg-atencion', 'Finalizado': 'bg-finalizado'}[estado] %> text-xs px-2 py-1 rounded-full font-bold"><%- estado  %></span>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">Semáforo de Manchester</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="w-4 h-4 <%- color  %> rounded-full"></span>
+                                        <span class="text-sm text-slate-700"><%- triage  %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+}
+
+refreshTurnsList()

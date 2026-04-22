@@ -2,24 +2,28 @@ import { Persona } from "./Persona.js"
 
 export class Paciente extends Persona {
     #idPaciente
-    constructor({
-        idPaciente= null,
+    /**
+     * 
+     * @param {*} idPaciente 
+     * @param {*} nombre 
+     * @param {*} apellidoPaterno 
+     * @param {*} apellidoMaterno 
+     * @param {*} sexo 
+     * @param {*} edad 
+     */
+    constructor(idPaciente,
         nombre,
         apellidoPaterno,
         apellidoMaterno,
-        fechaNacimiento,
         sexo,
-        edad,
-        telefono
-    }){
+        edad
+    ){
         super({
             nombre,
             apellidoPaterno,
             apellidoMaterno,
-            fechaNacimiento,
             sexo,
-            edad,
-            telefono
+            edad
         })
         this.#idPaciente = idPaciente
     }
@@ -36,10 +40,8 @@ export class Paciente extends Persona {
         return `idPaciente:${this.#idPaciente}
         Nombre: ${this.nombre}
         Apellido Paterno: ${this.apellidoPaterno}
-        Apellido Materno: ${this.apellidoMaterno}
-        FechaNacimiento: ${this.fechaNacimiento},
+        Apellido Materno: ${this.apellidoMaterno},
         Sexo: ${this.sexo}
-        Edad: ${this.edad}
-        Telefono: ${this.telefono}`
+        Edad: ${this.edad}`
     }
 }

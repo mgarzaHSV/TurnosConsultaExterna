@@ -14,6 +14,8 @@ export const turnoRouter = (TurnoController)=>{
     
     router.get('/turnos',requireAuth,requireRole(['Pantalla','Administrador']),TurnoController.getTurnos)
 
+    router.get('/api/turnos/estatus/generados', TurnoController.getTurnosRegistradosActivos)
+
     router.get('/api/turnos',TurnoController.getTodosTurnosActivos)
 
     return router
