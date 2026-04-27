@@ -39,81 +39,102 @@
     <dialog class="flex justify-center items-center m-auto p-0 border-0 rounded-lg shadow-lg">
         <section id="view-register" class="bg-slate-50 p-6">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="bg-white border-b border-slate-100 p-6 flex items-center gap-3">
+                <div class="bg-white border-b border-slate-100 p-1 flex items-center gap-3">
                     <i data-lucide="file-text" class="text-blue-600"></i>
                     <h2 class="text-xl font-semibold text-slate-800">Registro de Paciente & Triage</h2>
                 </div>
                 
                 <div class="p-8 grid grid-cols-1 gap-8">
                     <!-- Datos Personales -->
-                    <div class="space-y-4">
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Datos Generales</h3>
-                        <div>
-                            <label class="block text-sm text-slate-600 mb-1">Nombre</label>
-                            <input id="input-name" type="text" placeholder="Ricardo" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-600 mb-1">Apellido Paterno</label>
-                            <input id="input-firstName" type="text" placeholder="Garza" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-600 mb-1">Apellido Materno</label>
-                            <input id="input-lastName" type="text" placeholder="Perez" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm text-slate-600 mb-1">Edad</label>
-                                <input id="input-age" type="number" value="34" class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                     <form id="registrarTurno">
+                        <div class="space-y-4">
+                             <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Datos Generales</h3>
+                             <div>
+                                 <label class="block text-sm text-slate-600 mb-1">Nombre</label>
+                                 <input id="input-name" name="input-name" type="text" placeholder="Ricardo" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
                             </div>
-                            <div>
-                                <label class="block text-sm text-slate-600 mb-1">Sexo</label>
-                                <select id="input-sex" class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
-                                    <option>Masculino</option>
-                                    <option>Femenino</option>
-                                    <option>Otro</option>
-                                </select>
+                            <section class="grid grid-cols-2">
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">Apellido Paterno</label>
+                                    <input id="input-firstName" type="text" placeholder="Garza" required class="w-11/12 p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">Apellido Materno</label>
+                                    <input id="input-lastName" type="text" placeholder="Perez" required class="w-11/12 p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                </div>
+                            </section>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">Edad</label>
+                                    <input id="input-age" type="number" value="34" class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">Sexo</label>
+                                    <select id="input-sex" class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                        <option>Masculino</option>
+                                        <option>Femenino</option>
+                                        <option>Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">Consulta de seguimiento</label>
+                                    <select id="input-seguimiento" class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                        <option>NINGUNO</option>
+                                        <option>CONSULTORIO 1</option>
+                                        <option>CONSULTORIO 2</option>
+                                        <option>CONSULTORIO 3</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-slate-600 mb-1">No. Cuenta</label>
+                                    <input id="input-noCuenta" type="number" placeholder="12345" required class="w-full p-2 border border-slate-200 rounded bg-slate-50 focus:bg-white focus:border-blue-500 outline-none transition-colors">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manchester Triage Selector -->
+                        <div class="md:col-span-2 mt-4">
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1 border-b pb-0.5">Clasificación Manchester</h3>
+                            <div class="grid grid-cols-5 md:grid-cols-5 gap-1 m-2" id="triage-selector">
+                                <!-- Red -->
+                                <button type="button" onclick="selectTriage('red', 'Inmediato')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="red">
+                                    <div class="w-6 h-6 rounded-full shadow-sm bg-red-500"></div>
+                                    <span class="text-xs font-bold text-slate-700">Inmediato</span>
+                                </button>
+                                <!-- Orange -->
+                                <button type="button"  onclick="selectTriage('orange', 'Muy Urgente')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="orange">
+                                    <div class="w-6 h-6 rounded-full shadow-sm bg-orange-500"></div>
+                                    <span class="text-xs font-bold text-slate-700">Muy Urgente</span>
+                                </button>
+                                <!-- Yellow (Default Selected in Mock) -->
+                                <button type="button"  onclick="selectTriage('yellow', 'Urgente')" class="triage-btn relative p-4 rounded-xl border-2 flex  border-transparent flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="yellow">
+                                    <div class="w-6 h-6 rounded-full shadow-sm bg-yellow-500"></div>
+                                    <span class="text-xs font-bold text-slate-700">Urgente</span>
+                                </button>
+                                <!-- Green -->
+                                <button type="button"  onclick="selectTriage('green', 'Estándar')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="green">
+                                    <div class="w-6 h-6 rounded-full shadow-sm bg-green-500"></div>
+                                    <span class="text-xs font-bold text-slate-700">Estándar</span>
+                                </button>
+                                <!-- Blue -->
+                                <button type="button"  onclick="selectTriage('blue', 'No Urgente')" class="triage-btn active p-4 border-slate-800 bg-white transform scale-105  shadow-md relative rounded-xl border-2 hover:bg-slate-100 flex flex-col items-center gap-2 text-center" data-color="blue">
+                                    <div class="w-6 h-6 rounded-full shadow-sm bg-blue-500"></div>
+                                    <span class="text-xs font-bold text-slate-700">No Urgente</span>
+                                    <div class="absolute top-2 right-2 text-slate-800"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
+                                </button>
                             </div>
                         </div>
                     </div>
-    
-                    <!-- Manchester Triage Selector -->
-                    <div class="md:col-span-2 mt-4">
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-6 border-b pb-2">Clasificación Manchester</h3>
-                        <div class="grid grid-cols-5 md:grid-cols-5 gap-3" id="triage-selector">
-                            <!-- Red -->
-                            <button onclick="selectTriage('red', 'Inmediato')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="red">
-                                <div class="w-8 h-8 rounded-full shadow-sm bg-red-500"></div>
-                                <span class="text-xs font-bold text-slate-700">Inmediato</span>
-                            </button>
-                            <!-- Orange -->
-                            <button onclick="selectTriage('orange', 'Muy Urgente')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="orange">
-                                <div class="w-8 h-8 rounded-full shadow-sm bg-orange-500"></div>
-                                <span class="text-xs font-bold text-slate-700">Muy Urgente</span>
-                            </button>
-                            <!-- Yellow (Default Selected in Mock) -->
-                            <button onclick="selectTriage('yellow', 'Urgente')" class="triage-btn active relative p-4 rounded-xl border-2 border-slate-800 bg-white transform scale-105 shadow-md flex flex-col items-center gap-2 text-center transition-all" data-color="yellow">
-                                <div class="w-8 h-8 rounded-full shadow-sm bg-yellow-500"></div>
-                                <span class="text-xs font-bold text-slate-700">Urgente</span>
-                                <div class="absolute top-2 right-2 text-slate-800"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
-                            </button>
-                            <!-- Green -->
-                            <button onclick="selectTriage('green', 'Estándar')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="green">
-                                <div class="w-8 h-8 rounded-full shadow-sm bg-green-500"></div>
-                                <span class="text-xs font-bold text-slate-700">Estándar</span>
-                            </button>
-                            <!-- Blue -->
-                            <button onclick="selectTriage('blue', 'No Urgente')" class="triage-btn relative p-4 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 flex flex-col items-center gap-2 text-center transition-all opacity-70 hover:opacity-100" data-color="blue">
-                                <div class="w-8 h-8 rounded-full shadow-sm bg-blue-500"></div>
-                                <span class="text-xs font-bold text-slate-700">No Urgente</span>
-                            </button>
-                        </div>
+                    
+                    
+                    <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-lg shadow-blue-200">
+                            Registrar y generar turno
+                        </button>
                     </div>
-                </div>
-                <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-                    <button onclick="saveAndGoToQueue()" class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-lg shadow-blue-200">
-                        Registrar y generar turno
-                    </button>
-                </div>
+                </form>
             </div>
         </section>
     </dialog>

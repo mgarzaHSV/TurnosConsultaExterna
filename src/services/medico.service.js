@@ -25,7 +25,9 @@ export class MedicoService{
                 triage: element.manchester,
                 sexo: paciente.sexoPaciente,
                 edad: paciente.edadPaciente,
-                turno: element.turno
+                turno: element.turno,
+                seguimiento: element.seguimiento,
+                segundosTranscurridos: element.segundosTranscurridos
             };
         }))
         return mostrarCita
@@ -33,7 +35,7 @@ export class MedicoService{
 
     asignarMedicoPaciente = async ({idCita, userName}) => {
         const turnos = await this.CitaRepository.consultarTurnosActivosByUserName(userName)
-        if(turnos.length !== 0) return { code: 102, message: "Actualmente tiene un paciente en atención. Para asignar uno nuevo, debe finalizar la consulta en curso."}
+        if(turnos.length >= 2) return { code: 102, message: `Actualmente tiene ${turnos.length} turnos en atención. Para asignar uno nuevo, debe finalizar al menos uno.`}
         const resultado = await this.CitaRepository.asignarMedicoPaciente({userName,idCita})
         return {code: 103, message: "Paciente asignado correctamente", turno: resultado}
     }
@@ -53,6 +55,11 @@ export class MedicoService{
             };
         }))
         return mostrarCita
+    }
+
+    regresarAFila = async ( {idCita , userName }) => {
+        const resultado = await this.CitaRepository.regresarPacienteAFila({ idCita , userName })
+        return resultado
     }
 
     finalizarAtencion = async ({ idCita, userName }) => {

@@ -38,7 +38,7 @@ export class CitaService {
     }
     
     createCita = async (citaData) => {
-        let { nombre,apellidoPaterno, apellidoMaterno, triage, edad, sexo, signosVitales } = citaData
+        let { nombre,apellidoPaterno, apellidoMaterno, triage, edad, sexo, signosVitales, seguimiento, noCuenta } = citaData
 
         const dictionary = {
             "red":"01",
@@ -50,7 +50,7 @@ export class CitaService {
         triage = dictionary[triage]
         const paciente = new Paciente({nombre,apellidoPaterno,apellidoMaterno, sexo, edad})
         const pacienteGuardado = await this.PacienteRepository.createPaciente(paciente)
-        const newCita = await this.CitaRepository.createCita({pacienteGuardado, triage, edad, sexo, signosVitales});
+        const newCita = await this.CitaRepository.createCita({pacienteGuardado, triage, seguimiento, noCuenta});
         return newCita;
     }
 

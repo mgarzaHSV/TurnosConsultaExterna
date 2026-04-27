@@ -44,8 +44,19 @@ export class MedicoController {
         const { idCita } = req.body
         const actualizado = await this.MedicoService.finalizarAtencion({ idCita, userName})
         const io = req.app.get('io');
-        io.emit('turno_finalizado', { success: true, message: 'Estatus actualizado correctamente' });
+        io.emit('turno_finalizado', { success: true, mensaje: 'Estatus actualizado correctamente' });
         if(!actualizado) console.log("No se pudo actualizar")
-        res.json({ success: actualizado })
+        res.json({ success: true, data: actualizado })
+    }
+
+    regresarPacienteFila = async ( req, res ) => {
+        const userName = req.session.user.username
+        const { idCita } = req.body
+        const regresarFila = await this.MedicoService.regresarAFila({ idCita , userName })
+        if(!regresarFila) return res.json({ success: false, mensaje: "Ocurrio un error al regresar al paciente" })
+        const io = req.app.get('io');
+        io.emit('turno_regresado', { success: true, mensaje: 'Estatus actualizado correctamente' });
+        if(!regresarFila) console.log("No se pudo actualizar")
+        res.json({  success: true, mensaje: "Paciente regresado correctamente a la fila" ,data: regresarFila })
     }
 }

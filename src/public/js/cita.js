@@ -1,3 +1,13 @@
+document.getElementById("registrarTurno").addEventListener("submit", function(e) {
+    e.preventDefault(); // evita envío si es inválido
+    if (!this.checkValidity()) {
+        this.reportValidity(); // muestra mensajes
+        return;
+    }
+    // Aquí ya pasó la validación
+    saveAndGoToQueue();
+});
+
 // State
 const state = {
     triage: { color: 'yellow', name: 'Urgente', hex: '#eab308' },
@@ -25,13 +35,21 @@ function saveAndGoToQueue(){
             apellidoMaterno: document.getElementById('input-lastName').value,
             triage: document.querySelector('.triage-btn.active').dataset.color,
             edad: document.getElementById('input-age').value,
-            sexo: document.getElementById('input-sex').value
-
+            sexo: document.getElementById('input-sex').value,
+            seguimiento: document.getElementById('input-seguimiento').value,
+            noCuenta: document.getElementById('input-noCuenta').value
 })      }).then(res => res.json())
         .then(data => {
-            console.log(data)
             if(data){
-                alert(data.message);
+                console.log(data)
+                if(data.success){
+                    mensajeParaUsuario(data.message,'success')
+                    setTimeout(() => {
+                        location.href = ''
+                    }, 3000);
+                }else{
+                    mensajeParaUsuario('Ocurrio un error al crear el turno', 'error')
+                }
                 document.querySelector('dialog').close();
                 // Aquí podrías agregar lógica para actualizar la lista de turnos sin recargar la página
             } else {
@@ -63,3 +81,14 @@ function selectTriage(colorKey, name) {
         }
     });
 }
+
+function mensajeParaUsuario(mensaje, tipoIcon){
+    Swal.fire({
+        title: mensaje,
+        icon: tipoIcon,
+        showConfirmButton: false,
+        timer: tipoIcon === 'success' ? 2500 : 4500
+    });
+}
+
+lucide.createIcons();

@@ -17,9 +17,9 @@ export class CitaController {
     createCita = async (req, res) => {
         const newCita = await this.CitaService.createCita(req.body);
         if (newCita) {
-            res.status(201).json({ message: 'Cita creada exitosamente', cita: newCita });
+            res.status(201).json({success: true, message: 'Turno creado exitosamente', cita: newCita });
             const io = req.app.get('io');
-            io.emit('turno_creado', { success: true, message: 'Estatus actualizado correctamente' });
+            io.emit('turno_creado', { success: true, message: 'Turno creado exitosamente' });
         } else {
             res.status(500).json({ message: 'Error al crear la cita' });
         }

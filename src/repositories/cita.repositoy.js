@@ -29,7 +29,7 @@ export class CitaRepository {
         }
     }
 
-    createCita = async ({pacienteGuardado, triage}) => {
+    createCita = async ({pacienteGuardado, triage, seguimiento, noCuenta}) => {
         const query = `DECLARE @turno INT;
 
                     BEGIN TRAN;
@@ -45,7 +45,9 @@ export class CitaRepository {
                         estatus,
                         manchester,
                         idPaciente,
-                        idUsuarioCrea
+                        idUsuarioCrea,
+                        seguimiento,
+                        noCuenta
                     )
                     OUTPUT INSERTED.idCita
                     VALUES (
@@ -55,7 +57,9 @@ export class CitaRepository {
                         '01',
                         ${triage},
                         ${pacienteGuardado.idPaciente},
-                        3
+                        3,
+                        '${!seguimiento ? null:seguimiento}',
+                        '${noCuenta}'
                     );
 
                     COMMIT;`
@@ -104,10 +108,15 @@ export class CitaRepository {
 
     getAllTurnosPagados = async () => {
         const query = `SELECT 
-                                        *
+                                        *,
+                                        DATEDIFF(SECOND, 
+                                            CAST(fechaCobra AS DATETIME) + CAST(horaCobra AS DATETIME), 
+                                            GETDATE()
+                                        ) AS segundosTranscurridos
                         FROM			CITA (nolock)
                         WHERE			estatus = '02'
-                        ORDER BY		manchester,fechaCreacion,horaCreacion`
+                        ORDER BY		manchester,fechaCreacion,horaCreacion
+        `
         try {
             const resultado = await this.dataBase.consultar(query)
             if(!resultado) return null
@@ -118,7 +127,7 @@ export class CitaRepository {
     }
 
     pagarTurnoPaciente = async ({usuario, estatusCita, idCita })=>{
-        const query = `UPDATE CITA SET estatus = '${estatusCita}', horaCobra = CAST(GETDATE() AS TIME) ,   idUsuarioCobra = (SELECT idUsuario FROM USUARIO WHERE nombreUsuario = '${usuario}') OUTPUT INSERTED.idCita WHERE idCita = ${idCita}`
+        const query = `UPDATE CITA SET estatus = '${estatusCita}',fechaCobra = GETDATE(), horaCobra = CAST(GETDATE() AS TIME) ,   idUsuarioCobra = (SELECT idUsuario FROM USUARIO WHERE nombreUsuario = '${usuario}') OUTPUT INSERTED.idCita WHERE idCita = ${idCita}`
         try {
             const resultado = await this.dataBase.consultar(query)
             if(!resultado[0]) return null
@@ -154,6 +163,18 @@ export class CitaRepository {
             return resultado
         } catch (error) {
             console.error("Ocurrio un error al intentar consultar los turnos activos del medico")
+            return null
+        }
+    }
+
+    regresarPacienteAFila = async ( { idCita , userName }) => {
+        const query = `UPDATE CITA SET idUsuarioAsigna = (SELECT idUsuario FROM USUARIO WHERE nombreUsuario ='${userName}'), fechaAsignacion = NULL, horaAsignacion = NULL, estatus = '02' OUTPUT INSERTED.idCita WHERE idCita = ${idCita}`
+        try {
+            const resultado = await this.dataBase.consultar(query)
+            if(!resultado[0]) return null
+            return resultado[0]
+        } catch (error) {
+            console.error("Error al intentar finalizar la atención")
             return null
         }
     }

@@ -44,7 +44,8 @@ export class CajaService{
                 estatus: dictionary[element.estatus],
                 turno: element.turno,
                 edad: paciente.edadPaciente,
-                color: triageColor[element.manchester]
+                color: triageColor[element.manchester],
+                noCuenta: element.noCuenta
             };
         })
     )
