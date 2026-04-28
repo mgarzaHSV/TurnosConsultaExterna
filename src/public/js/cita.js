@@ -92,3 +92,8 @@ function mensajeParaUsuario(mensaje, tipoIcon){
 }
 
 lucide.createIcons();
+
+
+socket.on("turno_creado", () => {
+location.reload();
+});

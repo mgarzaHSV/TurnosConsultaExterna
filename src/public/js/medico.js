@@ -37,7 +37,8 @@ async function renderDoctorAtentionCards(){
             age: element.edad,
             sex: element.sexo,
             turnNumber: element.turno,
-            triage: TRIAGE_DATA[element.triage]
+            triage: TRIAGE_DATA[element.triage],
+            seguimiento: element.seguimiento,
         }
     })
 
@@ -62,6 +63,7 @@ async function renderDoctorAtentionCards(){
                                 ${patient.triage.name}
                             </div>
                         </div>
+                        <p class="text-sm p-2.5 text-gray-500">Seguimiento: <span class="font-black text-gray-800">${patient.seguimiento}</span></p>
                     </div>
 
                     <!-- Datos Físicos -->
@@ -291,8 +293,12 @@ socket.on("turno_pagado", () => {
 location.reload();
 });
 
+socket.on("turno_regresado", () => {
+location.reload();
+});
+
 socket.on("turno_asignado",() =>{
-    //location.reload();
+    location.reload();
 })
 
 

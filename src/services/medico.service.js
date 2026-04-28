@@ -26,8 +26,8 @@ export class MedicoService{
                 sexo: paciente.sexoPaciente,
                 edad: paciente.edadPaciente,
                 turno: element.turno,
-                seguimiento: element.seguimiento,
-                segundosTranscurridos: element.segundosTranscurridos
+                segundosTranscurridos: element.segundosTranscurridos,
+                seguimiento: element.seguimiento
             };
         }))
         return mostrarCita
@@ -51,7 +51,8 @@ export class MedicoService{
                 triage: element.manchester,
                 sexo: paciente.sexoPaciente,
                 edad: paciente.edadPaciente,
-                turno: element.turno
+                turno: element.turno,
+                seguimiento: element.seguimiento
             };
         }))
         return mostrarCita
