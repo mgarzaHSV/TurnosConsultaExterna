@@ -191,6 +191,10 @@ socket.on("turno_asignado", (turno) => {
 });
 
 
+socket.on("turno_regresado", () => {
+    renderQueueList()
+});
+
 socket.on("turno_finalizado", () => {
     renderQueueList()
 });
