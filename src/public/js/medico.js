@@ -362,7 +362,6 @@ const medicoEnAtencion = async () => {
             ).catch(error => {
                 console.error('Error en la solicitud:', error);
             });
-            console.log(medicoSeleccionado)
         }
       } catch (error) {
         console.error("Ocurrió un error:", error);
