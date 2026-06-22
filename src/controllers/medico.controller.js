@@ -59,4 +59,22 @@ export class MedicoController {
         if(!regresarFila) console.log("No se pudo actualizar")
         res.json({  success: true, mensaje: "Paciente regresado correctamente a la fila" ,data: regresarFila })
     }
+
+    listaMedicos = async (req , res ) => {
+        const medicos = await this.MedicoService.consultarListaMedicos()
+        if(!medicos) return res.json({ success: false, mensaje: "Ocurrio un error al consultar la lista de medicos" })
+        res.json(medicos)
+    }
+
+    registroMedicoConsultorio = async ( req , res ) => {
+        const { idMedico } = req.body
+        const idConsultorio = {
+            "CONSULTORIO 1": 1,
+            "CONSULTORIO 2": 2,
+            "CONSULTORIO 3": 3
+        }
+        const result = await this.MedicoService.guardarMedicoConsultorioTurno(idMedico, idConsultorio[req.session.user.nombre])
+        console.log(result)
+        res.json({ success: true, mensaje: `Médico con ID ${idMedico} registrado en el consultorio correctamente` })
+    }
 }

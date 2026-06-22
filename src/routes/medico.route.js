@@ -21,5 +21,9 @@ export const medicoRouter = (MedicoController) => {
 
     router.post('/api/medico/finalizar', MedicoController.finalizarAtencion)
 
+    router.get('/api/medicos', MedicoController.listaMedicos)
+
+    router.post('/api/medico', MedicoController.registroMedicoConsultorio)
+
     return router;
 }

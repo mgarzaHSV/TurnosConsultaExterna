@@ -1,4 +1,4 @@
-/** @typedef {import('../repositories/medico.respository.js').MedicoRepository} MedicoRepository */
+/** @typedef {import('../repositories/medico.repository.js').MedicoRepository} MedicoRepository */
 /** @typedef {import('../repositories/cita.repositoy.js').CitaRepository} CitaRepository */
 /** @typedef {import('../repositories/paciente.repository.js').PacienteRepository} PacienteRepository */
 export class MedicoService{
@@ -66,5 +66,15 @@ export class MedicoService{
     finalizarAtencion = async ({ idCita, userName }) => {
         const resultado = await this.CitaRepository.finalizarAtencion({ idCita , userName})
         return resultado
+    }
+
+    consultarListaMedicos = async () => {
+        const medicos = await this.MedicoRepository.getAllMedicos()
+        return medicos
+    }
+
+    guardarMedicoConsultorioTurno = async ( idMedico, idConsultorio) => {
+        const estatusRelacion = await this.MedicoRepository.guardarMedicoConsultorioTurno(idMedico, idConsultorio)
+        return estatusRelacion
     }
 }

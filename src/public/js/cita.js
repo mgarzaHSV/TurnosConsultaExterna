@@ -41,7 +41,6 @@ function saveAndGoToQueue(){
 })      }).then(res => res.json())
         .then(data => {
             if(data){
-                console.log(data)
                 if(data.success){
                     mensajeParaUsuario(data.message,'success')
                     setTimeout(() => {

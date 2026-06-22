@@ -35,6 +35,41 @@
             })  %>
         <%})  %>
     </section>
+    <section class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Médicos en atención: Consultorios</h2>
+            <hr class="mt-4 border-t-2 border-gray-100 rounded-full">
+        </div>
+
+        <div class="overflow-x-auto shadow-lg sm:rounded-xl border border-gray-200">
+            <table class="w-full text-sm text-left text-gray-600">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-200">
+                    <tr class="bg-blue-950 text-white text-center border-b-2 border-gray-200">
+                        <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+                            Consultorio
+                        </th>
+                        <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+                            Nombre Médico
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% consultorios.forEach(consultorio => { %>
+                        <tr class="bg-white border-b last:border-b-0 hover:bg-blue-50 transition-colors duration-200 ease-in-out group">
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 shadow-sm group-hover:bg-blue-200 transition-colors">
+                                    Consultorio <%- consultorio.Consultorio %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-gray-800 text-center">
+                                <%- consultorio.NombreCompleto %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
     <dialog class="flex justify-center items-center m-auto p-0 border-0 rounded-lg shadow-lg">
         <section id="view-register" class="bg-slate-50 p-6">

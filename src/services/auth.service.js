@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 
 /** @typedef {import('../repositories/auth.repository.js').AuthRepository} AuthRepository */
 /** @typedef {import('../repositories/rol.repository.js').RolRepository} RolRepository */
-/** @typedef {import('../repositories/') } */
 
 export class AuthService{
     /**
@@ -59,5 +58,18 @@ export class AuthService{
     getDataOfUser = async(userName)=>{
         const info = await this.AuthRepository.findUserByUsername(userName)
         return info
+    }
+
+    isUserLogined = async (username) => {
+        const userExists = await this.AuthRepository.verificarInicioSesion(username);
+        if (!userExists) {
+            throw new Error('Usuario no encontrado');
+        }
+        return userExists;
+    }
+
+    liberarConsultorio = async (username) => {
+        const idConsultorio = {'CONS1':1,'CONS2':2,'CONS3':3}[username.username]
+        this.AuthRepository.liberarConsultorio(idConsultorio)
     }
 }

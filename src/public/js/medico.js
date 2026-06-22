@@ -305,3 +305,66 @@ socket.on("turno_asignado",() =>{
 updateDisplays();
 
 setInterval(updateTimers, 1000);
+
+
+// 1. Definimos la función asíncrona correctamente retornando el resultado
+const medicoEnAtencion = async () => {
+    const response = await fetch('/api/medicos')
+    const listaMedicos = await response.json()
+
+    // 2. Transformamos el arreglo en un objeto plano: { "Nombre": "Nombre" }
+    const medicos = listaMedicos.reduce((obj, medico) => {
+    obj[medico.idMedico] = medico.nombreMedico;
+    return obj;
+    }, {});
+
+  // Guardamos el resultado del SweetAlert (que contiene la propiedad 'value')
+      const result = await Swal.fire({
+        title: "¿Quién está atendiendo a los paciente?",
+        input: "select",
+        inputOptions: medicos,
+        inputPlaceholder: "Selecciona un médico",
+        showCancelButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                if (value && value.trim() !== "") {
+                resolve(); // Todo bien, permite continuar
+                } else {
+                resolve("Es obligatorio seleccionar un médico para continuar.");
+                }
+            });
+            }
+        });
+      return result;
+    }
+    
+    (async () => {
+      try {
+        if(localStorage.getItem("idMedico")) {
+            return;
+        }
+        const { value: idMedico } = await medicoEnAtencion();
+        if (idMedico) {
+            const medicoSeleccionado = await fetch(`/api/medico`,{
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({"idMedico": idMedico})
+            }).then(res => {
+                res.json()
+                localStorage.setItem("idMedico", idMedico)
+            }
+    
+            ).catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
+            console.log(medicoSeleccionado)
+        }
+      } catch (error) {
+        console.error("Ocurrió un error:", error);
+      }
+    })();
