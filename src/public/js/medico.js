@@ -320,7 +320,7 @@ const medicoEnAtencion = async () => {
 
   // Guardamos el resultado del SweetAlert (que contiene la propiedad 'value')
       const result = await Swal.fire({
-        title: "¿Quién está atendiendo a los paciente?",
+        title: "¿Quién está atendiendo a los pacientes?",
         input: "select",
         inputOptions: medicos,
         inputPlaceholder: "Selecciona un médico",
