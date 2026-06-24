@@ -36,6 +36,17 @@ export class AuthController {
             }
         try {
             const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
+
+            if(!result){
+                return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" });
+            }
+            if(username === 'CONS1' || username === 'CONS2' || username === 'CONS3'){
+                /*
+                const isUserLogined = await this.AuthService.isUserLogined(conversionIdConsultorio[username])
+                if (isUserLogined.idMedico !== null) {
+                    return res.status(409).json({ mensaje: "El usuario ya ha iniciado sesión en otro dispositivo" });
+                }*/
+            }
             if (result !== false){
                 const usuario = await this.AuthService.getDataOfUser(username)
                 res
