@@ -24,9 +24,13 @@ export class MedicoController {
         const userName = req.session.user.username
         const { idCita } = req.body
         const actualizado = await this.MedicoService.asignarMedicoPaciente({ idCita, userName })
-        const io = req.app.get('io');
-        io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente' });
-        res.json({ success: actualizado })
+        if(actualizado.code === 102 ){
+            res.json({codigo: actualizado.code, mensaje: actualizado.message})
+        }else{
+            const io = req.app.get('io');
+            io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente' });
+            res.json({codigo: actualizado.code, mensaje: actualizado.message})
+        }
     }
 
     consultarTurnosAsignados = async ( req , res ) =>{
@@ -40,8 +44,37 @@ export class MedicoController {
         const { idCita } = req.body
         const actualizado = await this.MedicoService.finalizarAtencion({ idCita, userName})
         const io = req.app.get('io');
-        io.emit('turno_finalizado', { success: true, message: 'Estatus actualizado correctamente' });
-        if(!actualizado) console.error("No se pudo actualizar")
-        res.json({ success: actualizado })
+        io.emit('turno_finalizado', { success: true, mensaje: 'Estatus actualizado correctamente' });
+        if(!actualizado) console.log("No se pudo actualizar")
+        res.json({ success: true, data: actualizado })
+    }
+
+    regresarPacienteFila = async ( req, res ) => {
+        const userName = req.session.user.username
+        const { idCita } = req.body
+        const regresarFila = await this.MedicoService.regresarAFila({ idCita , userName })
+        if(!regresarFila) return res.json({ success: false, mensaje: "Ocurrio un error al regresar al paciente" })
+        const io = req.app.get('io');
+        io.emit('turno_regresado', { success: true, mensaje: 'Estatus actualizado correctamente' });
+        if(!regresarFila) console.log("No se pudo actualizar")
+        res.json({  success: true, mensaje: "Paciente regresado correctamente a la fila" ,data: regresarFila })
+    }
+
+    listaMedicos = async (req , res ) => {
+        const medicos = await this.MedicoService.consultarListaMedicos()
+        if(!medicos) return res.json({ success: false, mensaje: "Ocurrio un error al consultar la lista de medicos" })
+        res.json(medicos)
+    }
+
+    registroMedicoConsultorio = async ( req , res ) => {
+        const { idMedico } = req.body
+        const idConsultorio = {
+            "CONSULTORIO 1": 1,
+            "CONSULTORIO 2": 2,
+            "CONSULTORIO 3": 3
+        }
+        const result = await this.MedicoService.guardarMedicoConsultorioTurno(idMedico, idConsultorio[req.session.user.nombre])
+        console.log(result)
+        res.json({ success: true, mensaje: `Médico con ID ${idMedico} registrado en el consultorio correctamente` })
     }
 }

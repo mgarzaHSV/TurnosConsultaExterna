@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba de Turnos</title>
+    <title>Turnos Consulta Externa - Login </title>
     <link rel="stylesheet" href="/css/style.css">
+    <!-- JavaScript de SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-[linear-gradient(43deg,rgba(49,95,169,1)_29%,rgba(20,156,91,1)_37%,rgba(249,218,79,1)_100%)]">
     <!-- Login de entrada -->
@@ -38,8 +40,10 @@
                     credentials: "include"
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error de autenticación');
+                    if (response.status === 409) {
+                        throw new Error('Usuario ya se encuentra logueado en otro dispositivo, es necesario cerrar sesión para poder ingresar');
+                    }else if (response.status === 401) {
+                        throw new Error('Error de autenticación, por favor verifica tus credenciales');
                     }
                     return response.json();
                 })
@@ -47,8 +51,15 @@
                     window.location.href = data.href;
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || 'Error de red');
+                     Swal.fire({
+                            title: error.message,
+                            icon: 'error',
+                            showConfirmButton: false,
+                            timer: 4500
+                        })
+                        .then(() => {
+                            window.location.href = '/login';
+                        });
                 });
             });
             // Función auxiliar para leer cookies por nombre
@@ -57,7 +68,6 @@
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
             };
-
         </script>
 </body>
 </html>

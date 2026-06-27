@@ -24,8 +24,7 @@ export const requireRole = (allowedRoles = []) => {
         "Administrador": '/recepcion',
         "Recepcion": '/recepcion',
         "Caja": '/caja',
-        "Medico": '/medico',
-        "Pantalla": '/turnos'
+        "Medico": '/medico'
     };
 
     return (req, res, next) => {

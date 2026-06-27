@@ -79,4 +79,17 @@ export class AuthService{
             return null
         }
     }
+
+    isUserLogined = async (username) => {
+        const userExists = await this.AuthRepository.verificarInicioSesion(username);
+        if (!userExists) {
+            throw new Error('Usuario no encontrado');
+        }
+        return userExists;
+    }
+
+    liberarConsultorio = async (username) => {
+        const idConsultorio = {'CONS1':1,'CONS2':2,'CONS3':3}[username.username]
+        this.AuthRepository.liberarConsultorio(idConsultorio)
+    }
 }

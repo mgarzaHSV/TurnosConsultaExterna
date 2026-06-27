@@ -178,23 +178,23 @@ updateDisplays();
 const notificationSound = new Audio('/sounds/notification.mp3')
 
 socket.on("turno_pagado", () => {
-    location.reload();
+    renderQueueList()
 });
 
-socket.on("turno_asignado", () => {
+socket.on("turno_asignado", (turno) => {
     // reproducir sonido
     notificationSound.play().catch(err => {
         console.error("No se pudo reproducir el audio:", err);
     });
-    location.reload();
+    renderQueueList()
 });
 
+
+socket.on("turno_regresado", () => {
+    renderQueueList()
+});
 
 socket.on("turno_finalizado", () => {
-    // reproducir sonido
-    notificationSound.play().catch(err => {
-        console.error("No se pudo reproducir el audio:", err);
-    });
-    location.reload();
+    renderQueueList()
 });
 

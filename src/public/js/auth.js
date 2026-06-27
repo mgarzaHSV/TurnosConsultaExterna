@@ -9,6 +9,9 @@ function logout(){
     .then(data => {
         if (data.status === 200) {
             // Redirigir al usuario a la página de inicio de sesión después del logout
+            if(localStorage.getItem('idMedico')){
+                localStorage.removeItem('idMedico')
+            }
             window.location.href = '/login';
         } else {
             console.error('Error al cerrar sesión:', data.mensaje);

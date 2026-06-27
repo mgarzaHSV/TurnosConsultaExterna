@@ -19,7 +19,6 @@ export class TurnoController {
     getTurnos = async (req, res) =>{
         const data = await this.TurnoService.consultaTurnos()
         res.render('turno',{
-            user: req.session.user.nombre,
             data
         })
     }

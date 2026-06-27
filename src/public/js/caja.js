@@ -27,8 +27,12 @@ function setStatus(btnElement, status,idCita) {
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message)
-        location.reload()
+        if(data.success){
+            mensajeParaUsuario(data.message, 'success')
+
+        }else{
+            mensajeParaUsuario(data.message, 'error')
+        }
     })
     .catch(error => {
         console.error('Error al actualizar estatus:', error);
@@ -38,3 +42,20 @@ function setStatus(btnElement, status,idCita) {
 socket.on("turno_creado", () => {
 location.reload();
 });
+
+
+socket.on("turno_pagado", () => {
+    setTimeout(() => {
+        location.href = ''
+    }, 3000);
+});
+
+
+function mensajeParaUsuario(mensaje, tipoIcon){
+    Swal.fire({
+        title: mensaje,
+        icon: tipoIcon,
+        showConfirmButton: false,
+        timer: tipoIcon === 'success' ? 2500 : 4500
+    });
+}

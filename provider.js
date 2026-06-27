@@ -9,7 +9,8 @@ import { Database } from "./src/database/database.js";
 import { AuthRepository } from "./src/repositories/auth.repository.js";
 import { CajaRepository } from "./src/repositories/caja.repository.js";
 import { CitaRepository } from "./src/repositories/cita.repositoy.js";
-import { MedicoRepository } from "./src/repositories/medico.respository.js";
+import { ConsultorioRepository } from "./src/repositories/consultorio.repository.js";
+import { MedicoRepository } from "./src/repositories/medico.repository.js";
 import { PacienteRepository } from "./src/repositories/paciente.repository.js";
 import { RecepcionRepository } from "./src/repositories/recepcion.repository.js";
 import { RolRepository } from "./src/repositories/rol.repository.js";
@@ -23,6 +24,7 @@ import { turnoRouter } from "./src/routes/turno.route.js";
 import { AuthService } from "./src/services/auth.service.js";
 import { CajaService } from "./src/services/caja.service.js";
 import { CitaService } from "./src/services/cita.service.js";
+import { ConsultorioService } from "./src/services/consultorio.service.js";
 import { MedicoService } from "./src/services/medico.service.js";
 import { RecepcionService } from "./src/services/recepcion.service.js";
 import { TurnoService } from "./src/services/turno.service.js";
@@ -41,6 +43,7 @@ const cajaRepository = new CajaRepository(baseDatos)
 const rolRepository = new RolRepository(baseDatos)
 const turnoRepository = new TurnoRepository(baseDatos)
 const medicoRepository = new MedicoRepository(baseDatos)
+const consultorioRepository = new ConsultorioRepository(baseDatos)
 
 // Instancias de servicios
 const authService = new AuthService(authRepository, rolRepository)
@@ -49,10 +52,11 @@ const citaService = new CitaService(citaRepository, pacienteRepository)
 const cajaService = new CajaService(cajaRepository, citaRepository, pacienteRepository)
 const turnoService = new TurnoService(turnoRepository, pacienteRepository)
 const medicoService = new MedicoService(medicoRepository,citaRepository,pacienteRepository)
+const consultorioService = new ConsultorioService(consultorioRepository)
 
 // Instancias de controladores
 const authController = new AuthController(authService)
-const recepcionController = new RecepcionController(recepcionService, turnoService)
+const recepcionController = new RecepcionController(recepcionService, citaService, consultorioService)
 const citaController = new CitaController(citaService)
 const cajaController = new CajaController(cajaService)
 const turnoController = new TurnoController(turnoService)

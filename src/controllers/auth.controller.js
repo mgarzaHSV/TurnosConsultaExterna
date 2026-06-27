@@ -21,6 +21,10 @@ export class AuthController {
     }
 
     logout = async (req, res) =>{
+        const usuario = req.session.user
+        if(usuario.rol === 'Medico'){
+            this.AuthService.liberarConsultorio(usuario)
+        }
         res.clearCookie('access_token');
         res.json({ status: 200, mensaje: "Logout exitoso" });
     }
@@ -35,19 +39,33 @@ export class AuthController {
                 5: '/pantalla'
             }
         try {
-            const user ={
-                username: username,
-                password: password
+            const conversionIdConsultorio = {
+                'CONS1': 1,
+                'CONS2': 2,
+                'CONS3': 3
             }
-            const result = await this.AuthService.verifyUserAndPassword(user, req.cookies['X-SRF-TOKEN']);
+
+
+            const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
+
+            if(!result){
+                return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" });
+            }
+            if(username === 'CONS1' || username === 'CONS2' || username === 'CONS3'){
+                /*
+                const isUserLogined = await this.AuthService.isUserLogined(conversionIdConsultorio[username])
+                if (isUserLogined.idMedico !== null) {
+                    return res.status(409).json({ mensaje: "El usuario ya ha iniciado sesión en otro dispositivo" });
+                }*/
+            }
             if (result !== false){
                 const usuario = await this.AuthService.getDataOfUser(username)
                 if(!usuario) return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
                 res
                 .cookie("access_token", result, { httpOnly: true })
-                .json({ status: 200, mensaje: "Login exitoso",otraProdieda: "Texto de prueba", href: roles[usuario.rol.idRol]});
+                .json({ status: 200, mensaje: "Login exitoso",otraPropiedad: "Usuario verificador correctamente", href: roles[usuario.idRol]});
             }
-            else res.status(401).json({ mensaje: "Usuario o contraseña incorrectos" })
+            
         } catch (error) {
             res.status(401).json({ error: error.message });
             console.error(error);

@@ -1,3 +1,18 @@
+
+let citasGlobal = [];
+
+function updateTimers() {
+    citasGlobal.forEach(patient => {
+        if (!patient.segundosTranscurridos) return;
+        patient.segundosTranscurridos ++
+
+        const el = document.getElementById(`timer-${patient.idCita}`);
+        if (!el) return;
+
+        el.textContent = getElapsedTime(patient.segundosTranscurridos);
+    });
+}
+
 // --- CONSTANTS & MOCK DATA ---
 const TRIAGE_DATA = {
     "1": { color: 'red', hex: '#ef4444', name: 'Resucitación' },
@@ -22,7 +37,8 @@ async function renderDoctorAtentionCards(){
             age: element.edad,
             sex: element.sexo,
             turnNumber: element.turno,
-            triage: TRIAGE_DATA[element.triage]
+            triage: TRIAGE_DATA[element.triage],
+            seguimiento: element.seguimiento,
         }
     })
 
@@ -47,12 +63,20 @@ async function renderDoctorAtentionCards(){
                                 ${patient.triage.name}
                             </div>
                         </div>
+                        <p class="text-sm p-2.5 text-gray-500">Seguimiento: <span class="font-black text-gray-800">${patient.seguimiento}</span></p>
                     </div>
 
                     <!-- Datos Físicos -->
                     <div class="w-full sm:w-1/5">
-                        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Edad y Sexo</span>
                         <span class="font-semibold text-slate-700 text-sm">${patient.age} años • ${patient.sex}</span>
+                    </div>
+                     <div class="w-full sm:w-auto flex-1">
+                        <div class="flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 rounded-lg px-6 py-4 border border-slate-100 w-fit">
+                             <button data-id-cita=${patient.idCita} onclick="regresarAFila(this,'${patient.turnNumber}')" class="w-full py-1 px-2 text-white rounded-xl hover:cursor-pointer font-bold transition-transform active:scale-95 shadow-md flex items-center justify-center gap-1 hover:opacity-90" style="background-color: ${patient.triage.hex}">
+                                <i data-lucide="undo-2" class="w-5 h-5"></i>
+                                Regresa a la fila
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -63,6 +87,7 @@ async function renderDoctorAtentionCards(){
                         Finalizar
                     </button>
                 </div>
+                
             </div>
         `;
         container.innerHTML += html;
@@ -85,25 +110,17 @@ async function renderDoctorCards() {
             age: element.edad,
             sex: element.sexo,
             turnNumber: element.turno,
-            triage: TRIAGE_DATA[element.triage]
+            triage: TRIAGE_DATA[element.triage],
+            seguimiento: element.seguimiento,
+            segundosTranscurridos: element.segundosTranscurridos
         }
     })
-    /*
-    // Combinar el actual y el historial para mostrar a todos
-    const allTurns = [{
-        name: state.name,
-        age: state.age,
-        sex: state.sex,
-        vitals: state.vitals,
-        turnNumber: state.turn,
-        consultingRoom: state.room,
-        triage: state.triage
-    }, ...state.history];
-    */
+
+    citasGlobal = allTurns;
 
     allTurns.forEach(patient => {
         const bgTint = `${patient.triage.hex}15`; // 15 es la transparencia en hex
-        
+        const tiempo = getElapsedTime(patient.segundosTranscurridos);
         const html = `
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col lg:flex-row items-center relative overflow-hidden hover:shadow-md transition-all duration-300" style="border-left: 6px solid ${patient.triage.hex}">
                 
@@ -122,12 +139,20 @@ async function renderDoctorCards() {
                                 ${patient.triage.name}
                             </div>
                         </div>
+                        <p class="text-sm p-2.5 text-gray-500">Seguimiento: <span class="font-black text-gray-800">${patient.seguimiento}</span></p>
                     </div>
 
                     <!-- Datos Físicos -->
                     <div class="w-full sm:w-1/5">
                         <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Edad y Sexo</span>
                         <span class="font-semibold text-slate-700 text-sm">${patient.age} años • ${patient.sex}</span>
+                    </div>
+                    <div class="w-full sm:w-auto flex-1">
+                        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block mb-1">Tiempo en Espera</span>
+                        <div class="flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 rounded-lg px-3 py-2 border border-slate-100 w-fit">
+                            <i data-lucide="timer" class="w-4 h-4 text-slate-400"></i>
+                            <span id="timer-${patient.idCita}" class="font-mono text-4xl font-bold">${tiempo}</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -157,17 +182,42 @@ function atenderPaciente(btnPresionado) {
             idCita: idCita
         })
     }).then(response => response.json()).then(data=>{
-            if(data.success) {
-                    alert("Turno asigano con éxito")
-                    renderDoctorCards();
-                    renderDoctorAtentionCards();
-                } else {
-                    console.error('Error al asignar la atención');
-                }
+        if(data.codigo === 103) {
+            renderDoctorCards();
+            renderDoctorAtentionCards();
+            mensajeParaUsuario(data.mensaje, "success")
+        } else {
+            mensajeParaUsuario(data.mensaje, "error")
+        }
     }).catch(error => {
         console.error('Error en la solicitud:', error);
     });
 }
+
+function regresarAFila(btnPresionado) {
+    const idCita = btnPresionado.dataset.idCita
+    fetch('/api/turno/regresar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            idCita: idCita
+        })
+    }).then(response => response.json()).then(data=>{
+        if(data.success) {
+            renderDoctorCards();
+            renderDoctorAtentionCards();
+            mensajeParaUsuario(data.mensaje, "success")
+        } else {
+            mensajeParaUsuario(data.mensaje, "error")
+        }
+    }).catch(error => {
+        console.error('Error en la solicitud:', error);
+    });
+}
+
 
 function finalizarAtencion(btnPresionado){
     const idCita = btnPresionado.dataset.idCita
@@ -182,11 +232,11 @@ function finalizarAtencion(btnPresionado){
         })
     }).then(response => response.json()).then(data => {
         if(data.success) {
-            alert("Atención finalizada con éxito")
+            mensajeParaUsuario("Atención finalizada con éxito", "success")
             renderDoctorCards();
             renderDoctorAtentionCards();
         } else {
-            console.error('Error al finalizar la atención');
+            mensajeParaUsuario('Error al finalizar la atención', "error")
         }
         })
     .catch(error => {
@@ -222,10 +272,98 @@ function updateDisplays() {
     lucide.createIcons();
 }
 
+function mensajeParaUsuario(mensaje, tipoIcon){
+    Swal.fire({
+        title: mensaje,
+        icon: tipoIcon,
+        showConfirmButton: false,
+        timer: tipoIcon === 'success' ? 2500 : 4500
+    });
+}
+
+function getElapsedTime(diffSeconds) {
+    const h = Math.floor(diffSeconds / 3600);
+    const m = Math.floor((diffSeconds % 3600) / 60);
+    const s = diffSeconds % 60;
+
+    return `${String(h).padStart(2,'0')}h:${String(m).padStart(2,'0')}m:${String(s).padStart(2,'0')}s`;
+}
+
 socket.on("turno_pagado", () => {
 location.reload();
 });
 
+socket.on("turno_regresado", () => {
+location.reload();
+});
+
+socket.on("turno_asignado",() =>{
+    location.reload();
+})
 
 
 updateDisplays();
+
+setInterval(updateTimers, 1000);
+
+
+// 1. Definimos la función asíncrona correctamente retornando el resultado
+const medicoEnAtencion = async () => {
+    const response = await fetch('/api/medicos')
+    const listaMedicos = await response.json()
+
+    // 2. Transformamos el arreglo en un objeto plano: { "Nombre": "Nombre" }
+    const medicos = listaMedicos.reduce((obj, medico) => {
+    obj[medico.idMedico] = medico.nombreMedico;
+    return obj;
+    }, {});
+
+  // Guardamos el resultado del SweetAlert (que contiene la propiedad 'value')
+      const result = await Swal.fire({
+        title: "¿Quién está atendiendo a los pacientes?",
+        input: "select",
+        inputOptions: medicos,
+        inputPlaceholder: "Selecciona un médico",
+        showCancelButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                if (value && value.trim() !== "") {
+                resolve(); // Todo bien, permite continuar
+                } else {
+                resolve("Es obligatorio seleccionar un médico para continuar.");
+                }
+            });
+            }
+        });
+      return result;
+    }
+    
+    (async () => {
+      try {
+        if(localStorage.getItem("idMedico")) {
+            return;
+        }
+        const { value: idMedico } = await medicoEnAtencion();
+        if (idMedico) {
+            const medicoSeleccionado = await fetch(`/api/medico`,{
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({"idMedico": idMedico})
+            }).then(res => {
+                res.json()
+                localStorage.setItem("idMedico", idMedico)
+            }
+    
+            ).catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
+        }
+      } catch (error) {
+        console.error("Ocurrió un error:", error);
+      }
+    })();

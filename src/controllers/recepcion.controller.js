@@ -1,15 +1,19 @@
 /** @typedef {import('../services/recepcion.service.js').RecepcionService} RecepcionService */
-/** @typedef {import('../services/turno.service.js').TurnoService} TurnoService */
-
+/** @typedef {import('../services/cita.service.js').CitaService} CitaService */
+/** @typedef {import('../services/consultorio.service.js').ConsultorioService} ConsultorioService */
 
 export class RecepcionController {
     /**
      * @param {RecepcionService} RecepcionService
-     * @param {TurnoService} TurnoService
+     * @param {CitaService} CitaService
+     * 
      */
-    constructor (RecepcionService, TurnoService){
+    constructor (RecepcionService, CitaService, ConsultorioService){
         this.RecepcionService = RecepcionService;
-        this.TurnoService = TurnoService;
+        this.ConsultorioService = ConsultorioService
+
+        /** @type {CitaService} */
+        this.CitaService = CitaService;
     }
 
     /**
@@ -23,7 +27,8 @@ export class RecepcionController {
         if (!user) {
             return res.redirect('/login');
         }
-        const data = await this.TurnoService.consultarTurnosGeneradosActivos()
-        res.render('recepcion', {user: req.session.user.nombre ,turnos: data});
+        const data = await this.CitaService.getAllCitas()
+        const consultorio = await this.ConsultorioService.consultarMedicosAtencion()
+        res.render('recepcion', {user: req.session.user.nombre ,turnos: data, consultorios: consultorio});
     }
 }

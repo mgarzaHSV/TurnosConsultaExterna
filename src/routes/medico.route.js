@@ -15,9 +15,15 @@ export const medicoRouter = (MedicoController) => {
 
     router.post('/api/medico/asignar', MedicoController.asignarMedicoPaciente)
 
+    router.post('/api/turno/regresar', MedicoController.regresarPacienteFila)
+
     router.get('/api/citas/atention', MedicoController.consultarTurnosAsignados)
 
     router.post('/api/medico/finalizar', MedicoController.finalizarAtencion)
+
+    router.get('/api/medicos', MedicoController.listaMedicos)
+
+    router.post('/api/medico', MedicoController.registroMedicoConsultorio)
 
     return router;
 }

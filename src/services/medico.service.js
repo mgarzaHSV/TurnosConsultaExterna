@@ -1,4 +1,4 @@
-/** @typedef {import('../repositories/medico.respository.js').MedicoRepository} MedicoRepository */
+/** @typedef {import('../repositories/medico.repository.js').MedicoRepository} MedicoRepository */
 /** @typedef {import('../repositories/cita.repositoy.js').CitaRepository} CitaRepository */
 /** @typedef {import('../repositories/paciente.repository.js').PacienteRepository} PacienteRepository */
 export class MedicoService{
@@ -25,18 +25,22 @@ export class MedicoService{
                 triage: element.manchester,
                 sexo: paciente.sexoPaciente,
                 edad: paciente.edadPaciente,
-                turno: element.turno
+                turno: element.turno,
+                segundosTranscurridos: element.segundosTranscurridos,
+                seguimiento: element.seguimiento
             };
         }))
         return mostrarCita
     }
 
     asignarMedicoPaciente = async ({idCita, userName}) => {
+        const turnos = await this.CitaRepository.consultarTurnosActivosByUserName(userName)
+        if(turnos.length >= 2) return { code: 102, message: `Actualmente tiene ${turnos.length} turnos en atención. Para asignar uno nuevo, debe finalizar al menos uno.`}
         const resultado = await this.CitaRepository.asignarMedicoPaciente({userName,idCita})
-        return resultado
+        return {code: 103, message: "Paciente asignado correctamente", turno: resultado}
     }
 
-    consultaTurnosActivosByUserName = async ( userName) => {
+    consultaTurnosActivosByUserName = async ( userName ) => {
         const turnos = await this.CitaRepository.consultarTurnosActivosByUserName(userName)
         const mostrarCita = await Promise.all(
         turnos.map(async (element) => {
@@ -47,14 +51,30 @@ export class MedicoService{
                 triage: element.manchester,
                 sexo: paciente.sexoPaciente,
                 edad: paciente.edadPaciente,
-                turno: element.turno
+                turno: element.turno,
+                seguimiento: element.seguimiento
             };
         }))
         return mostrarCita
     }
 
+    regresarAFila = async ( {idCita , userName }) => {
+        const resultado = await this.CitaRepository.regresarPacienteAFila({ idCita , userName })
+        return resultado
+    }
+
     finalizarAtencion = async ({ idCita, userName }) => {
         const resultado = await this.CitaRepository.finalizarAtencion({ idCita , userName})
         return resultado
+    }
+
+    consultarListaMedicos = async () => {
+        const medicos = await this.MedicoRepository.getAllMedicos()
+        return medicos
+    }
+
+    guardarMedicoConsultorioTurno = async ( idMedico, idConsultorio) => {
+        const estatusRelacion = await this.MedicoRepository.guardarMedicoConsultorioTurno(idMedico, idConsultorio)
+        return estatusRelacion
     }
 }
