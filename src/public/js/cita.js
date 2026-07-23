@@ -137,7 +137,7 @@ function crearTarjetaTurno({
 
     card.innerHTML = `
         <div class="${color} p-4">
-            <h2 class="text-white text-xl font-bold flex items-center gap-2">
+            <h2 class="${color === 'bg-urgente'?'text-black':'text-white'} text-xl font-bold flex items-center gap-2">
                 <span>📅</span>
                 Turno de Consulta T-${turno}
             </h2>
@@ -167,7 +167,14 @@ function crearTarjetaTurno({
                 <div class="flex items-center gap-2 mt-1">
                     <span class="w-4 h-4 ${color} rounded-full"></span>
                     <span class="text-sm text-slate-700">
-                        ${triage}
+                        ${
+                        {
+                            '1': 'Inmediato',
+                            '2': 'Muy Urgente',
+                            '3': 'Urgente',
+                            '4': 'Normal',
+                            '5': 'No urgente'
+                        }[triage]}
                     </span>
                 </div>
             </div>
