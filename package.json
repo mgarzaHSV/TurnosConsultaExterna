@@ -1,6 +1,6 @@
 {
   "name": "turnosconsultaurgencias",
-  "version": "1.2.1",
+  "version": "1.2.0",
   "description": "Programa para gestionar los turnos y emergencias de los pacientes",
   "main": "index.js",
   "scripts": {
