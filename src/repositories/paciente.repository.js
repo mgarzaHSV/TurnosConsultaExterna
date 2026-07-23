@@ -40,7 +40,7 @@ export class PacienteRepository {
             if(!paciente) return null
             return paciente[0]
         } catch (error) {
-            console.error("La consulta para revisar al paciente causo un error")
+            console.error("La consulta para revisar al paciente causo un error" + error)
         }
     }
 }

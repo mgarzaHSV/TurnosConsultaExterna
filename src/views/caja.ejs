@@ -2,28 +2,8 @@
 <%- include('partials/header') %>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-slate-800 mb-6">Caja</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <% turnos.forEach(turno => { %>
-                    <%- include('components/componenteCaja',{
-                        nombre: turno.paciente,
-                        estado: turno.estatus,
-                        turno: 'T-' + turno.turno,
-                        edad: turno.edad,
-                        estatus: turno.estatus,
-                        triage: {
-                            '1': 'Inmediato',
-                            '2': 'Muy Urgente',
-                            '3': 'Urgente',
-                            '4': 'Normal',
-                            '5': 'No urgente'
-                        }[turno.manchester],
-                        color: turno.color,
-                        idCita: turno.idCita,
-                        noCuenta: turno.noCuenta
-                    })  %>
-                <%})  %>
-            </div>
-
+        <div id="contenedorTurnos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     </div>
+    <script>let colaTurnos = <%- JSON.stringify(colaTurnos) %></script>
     <script src="/js/caja.js"></script>
 <%- include('partials/footer') %>

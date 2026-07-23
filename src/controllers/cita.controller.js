@@ -18,8 +18,9 @@ export class CitaController {
         const newCita = await this.CitaService.createCita(req.body);
         if (newCita) {
             res.status(201).json({success: true, message: 'Turno creado exitosamente', cita: newCita });
+            const citaCreada = await this.CitaService.getCitaByIdTarjeta(newCita.idCita)
             const io = req.app.get('io');
-            io.emit('turno_creado', { success: true, message: 'Turno creado exitosamente' });
+            io.emit('turno_creado', { success: true, message: 'Turno creado exitosamente', cita: citaCreada.toJSON()});
         } else {
             res.status(500).json({ message: 'Error al crear la cita' });
         }

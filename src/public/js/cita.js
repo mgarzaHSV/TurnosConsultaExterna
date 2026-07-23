@@ -4,8 +4,8 @@ document.getElementById("registrarTurno").addEventListener("submit", function(e)
         this.reportValidity(); // muestra mensajes
         return;
     }
-    // Aquí ya pasó la validación
     saveAndGoToQueue();
+    registrarTurno.reset(); // Limpia el formulario despues de enviar toda la información
 });
 
 // State
@@ -20,8 +20,18 @@ const TRIAGE_DATA = {
     "2": { color: 'orange', hex: '#f97316', name: 'Emergencia' },
     "3": { color: 'yellow', hex: '#eab308', name: 'Urgencia' },
     "4": { color: 'green', hex: '#22c55e', name: 'Urgencia Menor' },
-    "5": { color: 'blue', hex: '#3b82f6', name: 'Sin urgencia' }
+    "5": { color: 'blue', class: 'bg-noUrgente', name: 'Sin urgencia' }
 };
+
+function getInputValue(id) {
+    const input = /** @type {HTMLInputElement|null} */ (document.getElementById(id));
+    return input ? input.value : '';
+}
+
+function getActiveTriageColor() {
+    const activeButton = document.querySelector('.triage-btn.active');
+    return activeButton ? activeButton.dataset.color : '';
+}
 
 function saveAndGoToQueue(){
     fetch('/citas',{
@@ -30,26 +40,28 @@ function saveAndGoToQueue(){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            nombre: document.getElementById('input-name').value,
-            apellidoPaterno: document.getElementById('input-firstName').value,
-            apellidoMaterno: document.getElementById('input-lastName').value,
-            triage: document.querySelector('.triage-btn.active').dataset.color,
-            edad: document.getElementById('input-age').value,
-            sexo: document.getElementById('input-sex').value,
-            seguimiento: document.getElementById('input-seguimiento').value,
-            noCuenta: document.getElementById('input-noCuenta').value
-})      }).then(res => res.json())
+            nombre: getInputValue('input-name'),
+            apellidoPaterno: getInputValue('input-firstName'),
+            apellidoMaterno: getInputValue('input-lastName'),
+            triage: getActiveTriageColor(),
+            edad: getInputValue('input-age'),
+            sexo: getInputValue('input-sex'),
+            seguimiento: getInputValue('input-seguimiento'),
+            noCuenta: getInputValue('input-noCuenta')
+        })
+    }).then(res => res.json())
         .then(data => {
             if(data){
                 if(data.success){
                     mensajeParaUsuario(data.message,'success')
-                    setTimeout(() => {
+                    /*setTimeout(() => {
                         location.href = ''
-                    }, 3000);
+                    }, 3000);*/
                 }else{
                     mensajeParaUsuario('Ocurrio un error al crear el turno', 'error')
                 }
-                document.querySelector('dialog').close();
+                const dialog = document.querySelector('dialog');
+                if (dialog) dialog.close();
                 // Aquí podrías agregar lógica para actualizar la lista de turnos sin recargar la página
             } else {
                 alert('Error al registrar paciente');
@@ -93,6 +105,74 @@ function mensajeParaUsuario(mensaje, tipoIcon){
 lucide.createIcons();
 
 
-socket.on("turno_creado", () => {
-location.reload();
+socket.on("turno_creado", (turno) => {
+    let tarjetaAgregar = crearTarjetaTurno(turno.cita);
+    const turnosContainer = document.getElementById("tarjetasTurnosActivos");
+    if (turnosContainer && tarjetaAgregar) {
+        turnosContainer.appendChild(tarjetaAgregar);
+    }
 });
+
+/**
+ * 
+ * @param {number} idCita
+ * @returns 
+ */
+function crearTarjetaTurno({
+    idCita, 
+    paciente,
+    triage,
+    estatus,
+    turno,
+    edad,
+    color,
+    noCuenta
+}) {
+
+    const card = document.createElement("div");
+    card.setAttribute("data-idCita", idCita)
+
+    card.className =
+        "max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200";
+
+    card.innerHTML = `
+        <div class="${color} p-4">
+            <h2 class="text-white text-xl font-bold flex items-center gap-2">
+                <span>📅</span>
+                Turno de Consulta T-${turno}
+            </h2>
+        </div>
+
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">
+                        Paciente
+                    </p>
+                    <p class="text-lg font-bold text-slate-800">
+                        ${paciente}
+                    </p>
+                </div>
+
+                <span class="text-amber-50 bg-generado text-xs px-2 py-1 rounded-full font-bold">
+                    ${estatus}
+                </span>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500 uppercase font-semibold tracking-wider">
+                    Semáforo de Manchester
+                </p>
+
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-4 h-4 ${color} rounded-full"></span>
+                    <span class="text-sm text-slate-700">
+                        ${triage}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    return card;
+}

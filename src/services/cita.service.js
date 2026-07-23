@@ -1,3 +1,4 @@
+import { DTOCitaTarjeta } from "../DTO/cita.dto.js";
 import { Paciente } from "../models/Paciente.js";
 
 /** @typedef {import('../repositories/cita.repositoy.js').CitaRepository} CitaRepository */
@@ -57,5 +58,37 @@ export class CitaService {
     getCitaById = async (id) => {
         const cita = await this.CitaRepository.getCitaById(id);
         return cita;
+    }
+
+    /**
+     * 
+     * @param {number} id Idetificador de turno creado
+     * @returns 
+     */
+    getCitaByIdTarjeta = async (id) =>{
+        const cita = await this.CitaRepository.getCitaById(id);
+        const paciente = await this.PacienteRepository.getPacienteById(cita.idPaciente)
+        return new DTOCitaTarjeta({
+            idCita: cita.idCita,
+            paciente: `${paciente.nombrePaciente} ${paciente.appPaciente} ${paciente.apmPaciente}`,
+            triage: cita.manchester,
+            estatus: {
+                "01": 'Generado',
+                "02": 'Fila',
+                "03": 'Atención',
+                "04": 'Finalizado',
+                "05": 'Cancelado'
+            }[cita.estatus],
+            turno: cita.turno,
+            edad: paciente.edadPaciente,
+            color: {
+                    '1': 'bg-inmediato',
+                    '2': 'bg-muyUrgente',
+                    '3': 'bg-urgente',
+                    '4': 'bg-normal',
+                    '5': 'bg-noUrgente'
+                }[cita.manchester],
+            noCuenta: cita.noCuenta
+        })
     }
 }

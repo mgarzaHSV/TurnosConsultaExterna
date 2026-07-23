@@ -18,7 +18,8 @@ export class CajaController {
         const data = await this.CajaService.consultarTurnos()
         res.render('caja',{
             user: req.session.user.nombre,
-            turnos : data
+            turnos : data,
+            colaTurnos: data
         })
     }
 
@@ -28,7 +29,7 @@ export class CajaController {
         try {
             await this.CajaService.registrarPago({usuario,estatus, turno, idCita })
             const io = req.app.get('io');
-            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente' });
+            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente', idTurno: idCita });
             res.status(200).json({ success: true, message: 'Estatus actualizado correctamente' });
         } catch (error) {
             console.error('Error al actualizar estatus:', error);

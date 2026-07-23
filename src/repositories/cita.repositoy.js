@@ -1,14 +1,4 @@
-export class CitaRepository {
-
-    /*
-    citas = [
-            { id: 1, paciente: 'Juan Pérez', triage: 'Urgente', estatus: 'Generado' },
-            { id: 2, paciente: 'María Gómez', triage: 'No urgente', estatus: 'Fila' },
-            { id: 3, paciente: 'Carlos López', triage: 'Inmediato', estatus: 'Fila' },
-            { id: 4, paciente: 'Ricardo Hernandez', triage: 'Normal', estatus: 'Atención' },
-            { id: 5, paciente: 'Eunice Garza', triage: 'Muy urgente', estatus: 'Finalizado' }
-        ];
-        */
+export class CitaRepository {44
 
     constructor(dataBase) {
         this.dataBase = dataBase
@@ -24,7 +14,7 @@ export class CitaRepository {
             const citas = await this.dataBase.consultar(query)
             return citas
         }catch (error){
-            console.error("Ocurrio un error al intentar consultar citas")
+            console.error("Ocurrio un error al intentar consultar citas ",error)
             return null 
         }
     }
@@ -67,13 +57,41 @@ export class CitaRepository {
             const result = await this.dataBase.consultar(query)
             return result[0]
         } catch (error) {
-            console.error("Ocurrio un error al intentar crear la cita")
+            console.error("Ocurrio un error al intentar crear la cita ", error)
             return null   
         }
     }
     
-    getCitaById = async (id) => {
-        return this.citas.find(cita => cita.id === parseInt(id));
+    /**
+     * Consulta de información de una cita por su indentificador
+     * 
+     * @param {number} idCita Identificador de la cita para consultar
+     */
+    getCitaById = async (idCita) => {
+        const query = `SELECT 
+                                                C.idCita,
+                                                C.fechaCreacion,
+                                                C.horaCobra,
+                                                C.horaCierra,
+                                                C.turno,
+                                                C.estatus,
+                                                C.manchester,
+												C.noCuenta,
+                                                P.idPaciente,
+                                                P.appPaciente,
+                                                P.apmPaciente,
+                                                P.nombrePaciente,
+												P.edadPaciente
+                        FROM					CITA		C (nolock) 
+                        INNER JOIN				PACIENTE	P (nolock)	ON	C.idPaciente = P.idPaciente 
+                        WHERE idCita = ${idCita}`;
+        try{
+            const result = await this.dataBase.consultar(query)
+            if(!result[0]) return null
+            return result[0]
+        }catch (error){
+            console.error("Ocurrio un error al intentar consultar la cita")
+        }
     }
 
     getCitasPendientesCobro = async ()=>{
