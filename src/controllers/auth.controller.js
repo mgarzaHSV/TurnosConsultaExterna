@@ -44,7 +44,10 @@ export class AuthController {
                 'CONS2': 2,
                 'CONS3': 3
             }
-
+            const usuario = {
+                username: username,
+                password: password
+            }
 
             const result = await this.AuthService.verifyUserAndPassword(username, password, req.cookies['X-SRF-TOKEN']);
 
@@ -57,6 +60,7 @@ export class AuthController {
                 if (isUserLogined.idMedico !== null) {
                     return res.status(409).json({ mensaje: "El usuario ya ha iniciado sesión en otro dispositivo" });
                 }*/
+               this.AuthService.liberarConsultorio(usuario)
             }
             if (result !== false){
                 const usuario = await this.AuthService.getDataOfUser(username)
@@ -64,7 +68,6 @@ export class AuthController {
                 .cookie("access_token", result, { httpOnly: true })
                 .json({ status: 200, mensaje: "Login exitoso",otraPropiedad: "Usuario verificador correctamente", href: roles[usuario.idRol]});
             }
-            
         } catch (error) {
             console.error(error);
             res.status(401).json({ error: error.message });
