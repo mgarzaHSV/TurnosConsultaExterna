@@ -289,17 +289,10 @@ function getElapsedTime(diffSeconds) {
     return `${String(h).padStart(2,'0')}h:${String(m).padStart(2,'0')}m:${String(s).padStart(2,'0')}s`;
 }
 
-socket.on("turno_pagado", () => {
-location.reload();
+socket.on("turno_pagado", async (turno) => {
+    renderDoctorCards();
+    renderDoctorAtentionCards();
 });
-
-socket.on("turno_regresado", () => {
-location.reload();
-});
-
-socket.on("turno_asignado",() =>{
-    location.reload();
-})
 
 
 updateDisplays();

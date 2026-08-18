@@ -1,11 +1,14 @@
 /** @typedef {import('../services/medico.service.js').MedicoService} MedicoService */
+/** @typedef {import('../services/cita.service.js').CitaService} CitaService */
 export class MedicoController {
     /**
      * 
-     * @param {MedicoService} MedicoService 
+     * @param {MedicoService} MedicoService
+     * @param {CitaService} CitaService 
      */
-    constructor(MedicoService){
+    constructor(MedicoService, CitaService){
         this.MedicoService = MedicoService
+        this.CitaService = CitaService
     }
 
 
@@ -24,11 +27,12 @@ export class MedicoController {
         const userName = req.session.user.username
         const { idCita } = req.body
         const actualizado = await this.MedicoService.asignarMedicoPaciente({ idCita, userName })
+        const cita = await this.CitaService.getCitaByIdTarjeta(idCita)
         if(actualizado.code === 102 ){
             res.json({codigo: actualizado.code, mensaje: actualizado.message})
         }else{
             const io = req.app.get('io');
-            io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente' });
+            io.emit('turno_asignado', { success: true, message: 'Estatus actualizado correctamente', cita });
             res.json({codigo: actualizado.code, mensaje: actualizado.message})
         }
     }
@@ -74,7 +78,6 @@ export class MedicoController {
             "CONSULTORIO 3": 3
         }
         const result = await this.MedicoService.guardarMedicoConsultorioTurno(idMedico, idConsultorio[req.session.user.nombre])
-        console.log(result)
         res.json({ success: true, mensaje: `Médico con ID ${idMedico} registrado en el consultorio correctamente` })
     }
 }

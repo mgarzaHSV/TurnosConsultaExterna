@@ -81,9 +81,12 @@ export class CitaRepository {44
                                                 P.appPaciente,
                                                 P.apmPaciente,
                                                 P.nombrePaciente,
-												P.edadPaciente
+												P.edadPaciente,
+												U.nombre,
+                                                C.seguimiento
                         FROM					CITA		C (nolock) 
-                        INNER JOIN				PACIENTE	P (nolock)	ON	C.idPaciente = P.idPaciente 
+                        INNER JOIN				PACIENTE	P (nolock)	ON	C.idPaciente = P.idPaciente
+						LEFT JOIN				USUARIO		U (nolock)	ON	C.idUsuarioAsigna =  U.idUsuario 
                         WHERE idCita = ${idCita}`;
         try{
             const result = await this.dataBase.consultar(query)

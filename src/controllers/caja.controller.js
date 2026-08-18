@@ -1,12 +1,15 @@
 /** @typedef {import('../services/caja.service.js').CajaService} CajaService */
+/** @typedef {import('../services/cita.service.js').CitaService} CitaService*/
 
 export class CajaController {
     /**
      * 
-     * @param {CajaService} CajaService 
+     * @param {CajaService} CajaService
+     * @param {CitaService} CitaService
      */
-    constructor(CajaService){
+    constructor(CajaService, CitaService){
         this.CajaService = CajaService;
+        this.CitaService = CitaService
     }
 
     /**
@@ -28,8 +31,9 @@ export class CajaController {
         const usuario = req.session.user.username
         try {
             await this.CajaService.registrarPago({usuario,estatus, turno, idCita })
+            const cita = await this.CitaService.getCitaByIdTarjeta(idCita)
             const io = req.app.get('io');
-            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente', idTurno: idCita });
+            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente', cita });
             res.status(200).json({ success: true, message: 'Estatus actualizado correctamente' });
         } catch (error) {
             console.error('Error al actualizar estatus:', error);
