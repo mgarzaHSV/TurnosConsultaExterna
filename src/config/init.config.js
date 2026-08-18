@@ -2,9 +2,12 @@ import express from 'express';
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import { ENV } from './env.config.js';
+import cors from 'cors';
 
 
 export const configMiddleware = (app) =>{
+
+  app.use(cors());
 
   app.use(express.static(ENV.PUBLIC));
   

@@ -47,7 +47,7 @@ socket.on("turno_creado", (turno) => {
 
 
 socket.on("turno_pagado", (turno) => {
-    eliminarTurno(turno.idTurno)
+    eliminarTurno(turno.cita.idCita)
     /*
     setTimeout(() => {
         location.href = ''

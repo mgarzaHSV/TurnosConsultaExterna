@@ -58,9 +58,9 @@ const consultorioService = new ConsultorioService(consultorioRepository)
 const authController = new AuthController(authService)
 const recepcionController = new RecepcionController(recepcionService, citaService, consultorioService)
 const citaController = new CitaController(citaService)
-const cajaController = new CajaController(cajaService)
+const cajaController = new CajaController(cajaService, citaService)
 const turnoController = new TurnoController(turnoService)
-const medicoController = new MedicoController(medicoService)
+const medicoController = new MedicoController(medicoService, citaService)
 
 // Instancias de routers
 export const AuthRouter = authRouter(authController)

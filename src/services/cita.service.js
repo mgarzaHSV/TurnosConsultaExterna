@@ -88,7 +88,9 @@ export class CitaService {
                     '4': 'bg-normal',
                     '5': 'bg-noUrgente'
                 }[cita.manchester],
-            noCuenta: cita.noCuenta
+            noCuenta: cita.noCuenta,
+            consultorio: cita.nombre,
+            seguimiento: cita.seguimiento
         })
     }
 }

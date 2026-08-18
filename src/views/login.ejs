@@ -68,6 +68,10 @@
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
             };
+
+            if(localStorage.getItem('idMedico')){
+                localStorage.removeItem('idMedico')
+            }
         </script>
 </body>
 </html>

@@ -7,21 +7,6 @@ const TRIAGE_DATA = {
     "5": { color: 'blue', hex: '#3b82f6', name: 'No Urgente' }
 };
 
-const state = {
-    name: 'Ricardo M. Lopez',
-    turn: 'T-102',
-    age: 34,
-    sex: 'Masculino',
-    room: 'Consultorio 2',
-    triage: TRIAGE_DATA.yellow,
-    vitals: { bp: '120/80', hr: '85', temp: '37.5', o2: '98' },
-    history: [
-        { turnNumber: 'T-101', consultingRoom: 'Consultorio 1', triage: TRIAGE_DATA.green },
-        { turnNumber: 'T-100', consultingRoom: 'Consultorio 3', triage: TRIAGE_DATA.blue },
-        { turnNumber: 'T-099', consultingRoom: 'Consultorio 2', triage: TRIAGE_DATA.yellow },
-    ]
-};
-
 
 
 function getDirectionIconHTML(room, sizeClass) {
@@ -34,16 +19,18 @@ function getDirectionIconHTML(room, sizeClass) {
 }
 
 function triggerModalAnimation(turnData) {
+    console.log(turnData)
     const modal = document.getElementById('queue-modal');
     const card = document.getElementById('queue-modal-card');
+    const triageHexa = TRIAGE_DATA[turnData.triage]?.hex || '#ffffff';
      
     // Set styles dynamically
-    card.style.borderColor = turnData.triage.hex;
-    card.style.boxShadow = `0 0 100px ${turnData.triage.hex}50`;
-    document.getElementById('queue-modal-title').style.color = turnData.triage.hex;
-    document.getElementById('queue-modal-turn').textContent = turnData.turnNumber;
-    document.getElementById('queue-modal-room').textContent = turnData.consultingRoom.replace(/consultorio/i, 'Cons.');
-    document.getElementById('queue-modal-icon').innerHTML = getDirectionIconHTML(turnData.consultingRoom, "w-20 h-20");
+    card.style.borderColor = triageHexa;
+    card.style.boxShadow = `0 0 100px ${triageHexa}50`;
+    document.getElementById('queue-modal-title').style.color = triageHexa;
+    document.getElementById('queue-modal-turn').textContent = turnData.paciente;
+    document.getElementById('queue-modal-room').textContent = turnData.consultorio || "En espera";
+    document.getElementById('queue-modal-icon').innerHTML = getDirectionIconHTML(turnData.consultorio, "w-20 h-20");
     lucide.createIcons();
 
     // Show Modal
@@ -105,35 +92,6 @@ async function renderQueueList() {
     lucide.createIcons();
 }
 
-function simularNuevoTurno() {
-    const randomNum = Math.floor(Math.random() * 900) + 100;
-    const randomRoom = [1, 2, 3][Math.floor(Math.random() * 3)];
-    const randomTriageKeys = Object.keys(TRIAGE_DATA);
-    const randomTriage = TRIAGE_DATA[randomTriageKeys[Math.floor(Math.random() * randomTriageKeys.length)]];
-    
-    const nuevoTurno = {
-        turnNumber: `T-${randomNum}`,
-        consultingRoom: `Consultorio ${randomRoom}`,
-        triage: randomTriage
-    };
-    
-    // Push current state to history before updating
-    state.history.unshift({
-        turnNumber: state.turn,
-        consultingRoom: state.room,
-        triage: state.triage
-    });
-    if (state.history.length > 4) state.history.pop(); // Keep max 4 history
-
-    // Update Current
-    state.turn = nuevoTurno.turnNumber;
-    state.room = nuevoTurno.consultingRoom;
-    state.triage = nuevoTurno.triage;
-    
-    updateDisplays();
-    triggerModalAnimation(nuevoTurno);
-}
-
 // --- GENERAL UPDATE LOGIC ---
 function updateDisplays() {
     document.querySelectorAll('.display-name').forEach(el => el.textContent = state.name);
@@ -183,6 +141,7 @@ socket.on("turno_pagado", () => {
 
 socket.on("turno_asignado", (turno) => {
     // reproducir sonido
+    triggerModalAnimation(turno.cita);
     notificationSound.play().catch(err => {
         console.log("No se pudo reproducir el audio:", err);
     });
@@ -197,4 +156,3 @@ socket.on("turno_regresado", () => {
 socket.on("turno_finalizado", () => {
     renderQueueList()
 });
-
