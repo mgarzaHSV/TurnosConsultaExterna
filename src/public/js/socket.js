@@ -1,2 +1,4 @@
-const socket = io("/");
+const socket = io("http://172.18.1.76:3005", {
+  transports: ["websocket", "polling"]
+});
 window.socket = socket;
