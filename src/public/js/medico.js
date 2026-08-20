@@ -1,10 +1,12 @@
-
 let citasGlobal = [];
 
 function updateTimers() {
     citasGlobal.forEach(patient => {
-        if (!patient.segundosTranscurridos) return;
-        patient.segundosTranscurridos ++
+        // Permitimos que el valor sea 0, solo saltamos si es nulo o indefinido
+        if (patient.segundosTranscurridos == null) return;
+        
+        // Forzamos a que sea número y sumamos 1
+        patient.segundosTranscurridos = Number(patient.segundosTranscurridos) + 1;
 
         const el = document.getElementById(`timer-${patient.idCita}`);
         if (!el) return;
@@ -22,30 +24,35 @@ const TRIAGE_DATA = {
     "5": { color: 'blue', hex: '#3b82f6', name: 'Sin urgencia' }
 };
 
-
 async function renderDoctorAtentionCards(){
-     const container = document.getElementById('doctor-patients-atention-grid');
+    const container = document.getElementById('doctor-patients-atention-grid');
     if(!container) return;
+
+    // 1. Fetch primero
+    const response = await fetch('/api/citas/atention');
+    const data = await response.json(); 
+
+    // 2. Limpiar después de obtener los datos
     container.innerHTML = '';
 
-    const response = await fetch('/api/citas/atention')
-    const data = await response.json() 
     const allTurns = data.map(element=>{
         return {
             idCita: element.id,
-            name:element.paciente,
+            name: element.paciente,
             age: element.edad,
             sex: element.sexo,
             turnNumber: element.turno,
             triage: TRIAGE_DATA[element.triage],
             seguimiento: element.seguimiento,
         }
-    })
+    });
 
+    // 3. Construir el HTML en una variable
+    let htmlContent = '';
     allTurns.forEach( patient => {
-        const bgTint = `${patient.triage.hex}15`; // 15 es la transparencia en hex
+        const bgTint = `${patient.triage.hex}15`; 
         
-        const html = `
+        htmlContent += `
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col lg:flex-row items-center relative overflow-hidden hover:shadow-md transition-all duration-300" style="border-left: 6px solid ${patient.triage.hex}">
                 
                 <!-- Info Principal -->
@@ -90,8 +97,10 @@ async function renderDoctorAtentionCards(){
                 
             </div>
         `;
-        container.innerHTML += html;
     });
+    
+    // 4. Inyectar todo de golpe
+    container.innerHTML = htmlContent;
     lucide.createIcons();
 }
 
@@ -99,29 +108,37 @@ async function renderDoctorAtentionCards(){
 async function renderDoctorCards() {
     const container = document.getElementById('doctor-patients-grid');
     if(!container) return;
+
+    // 1. Fetch primero
+    const response = await fetch('/api/citas');
+    const data = await response.json(); 
+
+    // 2. Limpiar contenedor
     container.innerHTML = '';
 
-    const response = await fetch('/api/citas')
-    const data = await response.json() 
     const allTurns = data.map(element=>{
         return {
             idCita: element.id,
-            name:element.paciente,
+            name: element.paciente,
             age: element.edad,
             sex: element.sexo,
             turnNumber: element.turno,
             triage: TRIAGE_DATA[element.triage],
             seguimiento: element.seguimiento,
-            segundosTranscurridos: element.segundosTranscurridos
+            // Aseguramos que inicie como número
+            segundosTranscurridos: Number(element.segundosTranscurridos) || 0 
         }
-    })
+    });
 
     citasGlobal = allTurns;
 
+    // 3. Construir HTML
+    let htmlContent = '';
     allTurns.forEach(patient => {
-        const bgTint = `${patient.triage.hex}15`; // 15 es la transparencia en hex
+        const bgTint = `${patient.triage.hex}15`; 
         const tiempo = getElapsedTime(patient.segundosTranscurridos);
-        const html = `
+        
+        htmlContent += `
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col lg:flex-row items-center relative overflow-hidden hover:shadow-md transition-all duration-300" style="border-left: 6px solid ${patient.triage.hex}">
                 
                 <!-- Info Principal -->
@@ -165,13 +182,15 @@ async function renderDoctorCards() {
                 </div>
             </div>
         `;
-        container.innerHTML += html;
     });
+    
+    // 4. Inyectar todo de golpe
+    container.innerHTML = htmlContent;
     lucide.createIcons();
 }
 
 function atenderPaciente(btnPresionado) {
-    const idCita = btnPresionado.dataset.idCita
+    const idCita = btnPresionado.dataset.idCita;
     fetch('/api/medico/asignar', {
         method: 'POST',
         headers: {
@@ -185,9 +204,9 @@ function atenderPaciente(btnPresionado) {
         if(data.codigo === 103) {
             renderDoctorCards();
             renderDoctorAtentionCards();
-            mensajeParaUsuario(data.mensaje, "success")
+            mensajeParaUsuario(data.mensaje, "success");
         } else {
-            mensajeParaUsuario(data.mensaje, "error")
+            mensajeParaUsuario(data.mensaje, "error");
         }
     }).catch(error => {
         console.error('Error en la solicitud:', error);
@@ -195,7 +214,7 @@ function atenderPaciente(btnPresionado) {
 }
 
 function regresarAFila(btnPresionado) {
-    const idCita = btnPresionado.dataset.idCita
+    const idCita = btnPresionado.dataset.idCita;
     fetch('/api/turno/regresar', {
         method: 'POST',
         headers: {
@@ -209,18 +228,17 @@ function regresarAFila(btnPresionado) {
         if(data.success) {
             renderDoctorCards();
             renderDoctorAtentionCards();
-            mensajeParaUsuario(data.mensaje, "success")
+            mensajeParaUsuario(data.mensaje, "success");
         } else {
-            mensajeParaUsuario(data.mensaje, "error")
+            mensajeParaUsuario(data.mensaje, "error");
         }
     }).catch(error => {
         console.error('Error en la solicitud:', error);
     });
 }
 
-
 function finalizarAtencion(btnPresionado){
-    const idCita = btnPresionado.dataset.idCita
+    const idCita = btnPresionado.dataset.idCita;
     fetch('/api/medico/finalizar', {
         method: 'POST',
         headers: {
@@ -232,21 +250,21 @@ function finalizarAtencion(btnPresionado){
         })
     }).then(response => response.json()).then(data => {
         if(data.success) {
-            mensajeParaUsuario("Atención finalizada con éxito", "success")
+            mensajeParaUsuario("Atención finalizada con éxito", "success");
             renderDoctorCards();
             renderDoctorAtentionCards();
         } else {
-            mensajeParaUsuario('Error al finalizar la atención', "error")
+            mensajeParaUsuario('Error al finalizar la atención', "error");
         }
-        })
+    })
     .catch(error => {
         console.error('Error en la solicitud:', error);
     });
-
 }
 
 // --- GENERAL UPDATE LOGIC ---
 function updateDisplays() {
+    /* (Mantuve esto comentado tal cual lo tenías, en caso de que necesites habilitarlo luego)
     document.querySelectorAll('.display-name').forEach(el => el.textContent = state.name);
     document.querySelectorAll('.display-turn').forEach(el => el.textContent = state.turn);
     document.querySelectorAll('.display-age').forEach(el => el.textContent = state.age);
@@ -257,14 +275,16 @@ function updateDisplays() {
     document.querySelectorAll('.display-hr').forEach(el => el.textContent = state.vitals.hr);
     document.querySelectorAll('.display-temp').forEach(el => el.textContent = state.vitals.temp);
     document.querySelectorAll('.display-o2').forEach(el => el.textContent = state.vitals.o2);
-    /*
+    
     // Triage colors in specific elements
     document.getElementById('status-header-color').style.backgroundColor = state.triage.hex;
     const docBadge = document.getElementById('doctor-triage-badge');
     if(docBadge) {
         docBadge.style.borderColor = state.triage.hex;
         docBadge.querySelector('div').style.backgroundColor = state.triage.hex;
-    }*/
+    }
+    */
+    
     renderDoctorCards();
     renderDoctorAtentionCards();
     
@@ -289,30 +309,31 @@ function getElapsedTime(diffSeconds) {
     return `${String(h).padStart(2,'0')}h:${String(m).padStart(2,'0')}m:${String(s).padStart(2,'0')}s`;
 }
 
-socket.on("turno_pagado", async (turno) => {
-    renderDoctorCards();
-    renderDoctorAtentionCards();
+socket.on("turno_pagado", () => {
+    updateDisplays();
 });
 
+socket.on("turno_asignado", () => {
+    updateDisplays();
+});
 
 updateDisplays();
 
 setInterval(updateTimers, 1000);
 
-
 // 1. Definimos la función asíncrona correctamente retornando el resultado
 const medicoEnAtencion = async () => {
-    const response = await fetch('/api/medicos')
-    const listaMedicos = await response.json()
+    const response = await fetch('/api/medicos');
+    const listaMedicos = await response.json();
 
     // 2. Transformamos el arreglo en un objeto plano: { "Nombre": "Nombre" }
     const medicos = listaMedicos.reduce((obj, medico) => {
-    obj[medico.idMedico] = medico.nombreMedico;
-    return obj;
+        obj[medico.idMedico] = medico.nombreMedico;
+        return obj;
     }, {});
 
-  // Guardamos el resultado del SweetAlert (que contiene la propiedad 'value')
-      const result = await Swal.fire({
+    // Guardamos el resultado del SweetAlert (que contiene la propiedad 'value')
+    const result = await Swal.fire({
         title: "¿Quién está atendiendo a los pacientes?",
         input: "select",
         inputOptions: medicos,
@@ -323,18 +344,18 @@ const medicoEnAtencion = async () => {
         inputValidator: (value) => {
             return new Promise((resolve) => {
                 if (value && value.trim() !== "") {
-                resolve(); // Todo bien, permite continuar
+                    resolve(); // Todo bien, permite continuar
                 } else {
-                resolve("Es obligatorio seleccionar un médico para continuar.");
+                    resolve("Es obligatorio seleccionar un médico para continuar.");
                 }
             });
-            }
-        });
-      return result;
-    }
+        }
+    });
+    return result;
+}
     
-    (async () => {
-      try {
+(async () => {
+    try {
         if(localStorage.getItem("idMedico")) {
             return;
         }
@@ -348,15 +369,13 @@ const medicoEnAtencion = async () => {
                 credentials: 'include',
                 body: JSON.stringify({"idMedico": idMedico})
             }).then(res => {
-                res.json()
-                localStorage.setItem("idMedico", idMedico)
-            }
-    
-            ).catch(error => {
+                res.json();
+                localStorage.setItem("idMedico", idMedico);
+            }).catch(error => {
                 console.error('Error en la solicitud:', error);
             });
         }
-      } catch (error) {
+    } catch (error) {
         console.error("Ocurrió un error:", error);
-      }
-    })();
+    }
+})();
