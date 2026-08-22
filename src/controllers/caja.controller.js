@@ -33,7 +33,7 @@ export class CajaController {
             await this.CajaService.registrarPago({usuario,estatus, turno, idCita })
             const cita = await this.CitaService.getCitaByIdTarjeta(idCita)
             const io = req.app.get('io');
-            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente', cita });
+            io.emit('turno_pagado', { success: true, message: 'Estatus actualizado correctamente', cita:cita, idCita:idCita});
             res.status(200).json({ success: true, message: 'Estatus actualizado correctamente' });
         } catch (error) {
             console.error('Error al actualizar estatus:', error);

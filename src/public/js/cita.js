@@ -106,11 +106,13 @@ lucide.createIcons();
 
 
 socket.on("turno_creado", (turno) => {
+     location.reload();
+     /*
     let tarjetaAgregar = crearTarjetaTurno(turno.cita);
     const turnosContainer = document.getElementById("tarjetasTurnosActivos");
     if (turnosContainer && tarjetaAgregar) {
         turnosContainer.appendChild(tarjetaAgregar);
-    }
+    }*/
 });
 
 /**

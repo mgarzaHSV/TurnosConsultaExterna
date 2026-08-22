@@ -1,5 +1,5 @@
-// Status Selection
-function setStatus(btnElement, status,idCita) {
+// --- ACCIONES CON LA API ---
+function setStatus(btnElement, status, idCita) {
     const buttonGroup = btnElement.parentElement;
     buttonGroup.querySelectorAll('.status-btn').forEach(btn => {
         btn.className = 'status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all';
@@ -7,12 +7,10 @@ function setStatus(btnElement, status,idCita) {
         if(icon) icon.remove();
     });
 
-    // Set active
+    // Cambiar a estado activo visualmente
     btnElement.className = 'status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all';
     btnElement.innerHTML += `<i data-lucide="check-circle" class="w-5 h-5"></i>`;
     lucide.createIcons();
-
-
 
     fetch(`/caja/update-cita-estatus`, {
         method: 'POST',
@@ -20,7 +18,7 @@ function setStatus(btnElement, status,idCita) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            idCita,
+            idCita: idCita,
             turno: btnElement.dataset.turno,
             estatus: status
         })
@@ -28,10 +26,14 @@ function setStatus(btnElement, status,idCita) {
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            mensajeParaUsuario(data.message, 'success')
-
-        }else{
-            mensajeParaUsuario(data.message, 'error')
+            mensajeParaUsuario(data.message, 'success');
+            
+            // ELIMINACIÓN INMEDIATA LOCAL:
+            // Borramos la tarjeta para la persona que acaba de cobrar sin esperar a nadie más
+            eliminarTurno(idCita);
+            colaTurnos = colaTurnos.filter(t => (t.idCita || t.id) != idCita);
+        } else {
+            mensajeParaUsuario(data.message, 'error');
         }
     })
     .catch(error => {
@@ -39,27 +41,35 @@ function setStatus(btnElement, status,idCita) {
     });
 }
 
-socket.on("turno_creado", (turno) => {
-    colaTurnos.push(turno.cita)
-    ordenarCitas()
-    actualizarVistaCitas()
+// === WEBSOCKETS (Sincronización para las demás pantallas) ===
+
+socket.on("turno_creado", (payload) => {
+    if(payload && payload.cita) {
+        colaTurnos.push(payload.cita);
+        ordenarCitas();
+        actualizarVistaCitas();
+    } else {
+        location.reload(); // Respaldo por si falla la estructura
+    }
+});
+
+// Cuando cualquier Caja marca un turno como Pagado
+socket.on("turno_pagado", (payload) => {
+    console.log("🟢 ¡Aviso de caja recibido! Actualizando médicos...")
+    // Atrapamos el ID directo que acabamos de poner en el backend
+    const idCita = payload.idCita;
+
+    if (idCita) {
+        eliminarTurno(idCita);
+        colaTurnos = colaTurnos.filter(t => (t.idCita || t.id) != idCita);
+    } else {
+        // Plan B: Seguro de vida por si algo se pierde en la red
+        location.reload();
+    }
 });
 
 
-socket.on("turno_pagado", (turno) => {
-    eliminarTurno(turno.cita.idCita)
-    /*
-    setTimeout(() => {
-        location.href = ''
-    }, 3000);*/
-});
-
-/**
- * 
- * @param {string} mensaje Texto el cual va a hacer mostrador en el modal 
- * @param {string} tipoIcon Icono que se mostrara en el modal, 'success' o 'error'
- */
-
+// --- FUNCIONES DE APOYO Y DOM ---
 function mensajeParaUsuario(mensaje, tipoIcon){
     Swal.fire({
         title: mensaje,
@@ -69,49 +79,47 @@ function mensajeParaUsuario(mensaje, tipoIcon){
     });
 }
 
-/** 
- * Seleccion del elemento del DOM que contiene la cita y se procede a eliminar de la vista del usuario
- * 
- * @param {number} idCita Identificador de la cita a la cual se va a eliminar de la vista
- */
 function eliminarTurno(idCita){
-    const elemento = document.querySelector(`[data-idTurno="${idCita}"]`)
+    // Buscamos el elemento (considerando que el navegador puede convertir data-attributes a minúsculas)
+    const elemento = document.querySelector(`[data-idTurno="${idCita}"]`) || document.querySelector(`[data-idturno="${idCita}"]`);
+    
     if(elemento){
-        elemento.remove()
+        // Le agregamos una transición suave para que se desvanezca en lugar de parpadear
+        elemento.style.transition = "all 0.4s ease";
+        elemento.style.opacity = "0";
+        elemento.style.transform = "scale(0.9)";
+        
+        setTimeout(() => {
+            elemento.remove();
+        }, 400);
     }
 }
-
 
 function ordenarCitas(){
     colaTurnos.sort((a, b) => {
         if (Number(a.triage) !== Number(b.triage)) {
             return Number(a.triage) - Number(b.triage);
         }
-
-        // Si tienen el mismo triage
-        return a.idCita - b.idCita;
+        return (a.idCita || a.id) - (b.idCita || b.id);
     });
 }
 
 function actualizarVistaCitas(){
-    const elementoContenedor = document.getElementById('contenedorTurnos')
+    const elementoContenedor = document.getElementById('contenedorTurnos');
     if(elementoContenedor){
-        elementoContenedor.innerHTML = ''
-        colaTurnos.forEach( turno =>{
-            const nuevaTarjeta = crearNuevaTarjetaCita(turno)
-            elementoContenedor.innerHTML += nuevaTarjeta
-        })
+        elementoContenedor.innerHTML = '';
+        colaTurnos.forEach( turno => {
+            const nuevaTarjeta = crearNuevaTarjetaCita(turno);
+            elementoContenedor.innerHTML += nuevaTarjeta;
+        });
+        lucide.createIcons();
     }
 }
 
-/**
- *  Generar una nueva tarjeta de cita en la vista del usuario
- *
- * @param {object} turno Objeto que contiene la información de la cita a mostrar
- */
 function crearNuevaTarjetaCita(turno){
-    return `<div data-idTurno="${turno.idCita}" class="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-            <div id="status-header-color" class="h-3 ${turno.color}"></div>
+    const id = turno.idCita || turno.id;
+    return `<div data-idTurno="${id}" class="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <div id="status-header-color" class="h-3 ${turno.color || 'bg-blue-500'}"></div>
             <div class="p-8">
                 <div class="flex justify-between items-start mb-6">
                     <div>
@@ -127,11 +135,11 @@ function crearNuevaTarjetaCita(turno){
                 <div class="mb-8">
                     <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Cambiar Estatus</h3>
                     <div class="space-y-2">
-                        <button onclick="setStatus(this, 'Pendiente',${turno.idCita})" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
+                        <button onclick="setStatus(this, 'Pendiente', ${id})" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 shadow-inner transition-all">
                             <span class="font-medium">Pendiente</span>
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="setStatus(this, 'Proyectada',${turno.idCita})" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
+                        <button onclick="setStatus(this, 'Proyectada', ${id})" class="status-btn w-full flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 text-slate-600 transition-all">
                             <span class="font-medium">Pagada</span>
                         </button>
                     </div>
@@ -141,8 +149,11 @@ function crearNuevaTarjetaCita(turno){
                     Última actualización: Hace un momento
                 </div>
             </div>
-        </div>`
+        </div>`;
 }
 
-ordenarCitas()
-actualizarVistaCitas()
+// Inicialización al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    ordenarCitas();
+    actualizarVistaCitas();
+});
