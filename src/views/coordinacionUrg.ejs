@@ -1,0 +1,182 @@
+<%- include('partials/head', { titulo: 'Coordinación Médica - Dashboard' }) %>
+<%- include('partials/header', { user }) %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<body class="bg-slate-50 min-h-screen text-slate-800">
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        
+        <!-- Encabezado y Controles de Filtro ("Mover los datos") -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="text-blue-600"></i>
+                    Dashboard de Coordinación Médica
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">Análisis mensual de productividad, grupos etarios y tiempos de triaje Manchester</p>
+            </div>
+
+            <div class="flex flex-wrap items-end gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mes Rápido</label>
+                    <input type="month" id="filtro-mes" class="p-2 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Desde</label>
+                    <input type="date" id="filtro-inicio" class="p-2 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Hasta</label>
+                    <input type="date" id="filtro-fin" class="p-2 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Consultorio</label>
+                    <select id="filtro-consultorio" class="p-2 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-blue-500 outline-none">
+                        <option value="TODOS">Todos los consultorios</option>
+                        <% consultorios.forEach(c => { %>
+                            <option value="<%= c.consultorio %>"><%= c.consultorio %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button id="btn-filtrar" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <i data-lucide="filter" class="w-4 h-4"></i> Actualizar
+                </button>
+                <button id="btn-exportar" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> CSV
+                </button>
+            </div>
+        </section>
+
+        <!-- Tarjetas KPI Principales -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Total de Atenciones (Periodo)</p>
+                    <h2 id="kpi-total" class="text-3xl font-bold text-slate-800 mt-1">0</h2>
+                    <span class="text-xs text-slate-400">Consultas cerradas en el rango</span>
+                </div>
+                <div class="p-4 bg-blue-50 text-blue-600 rounded-xl">
+                    <i data-lucide="users" class="w-7 h-7"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Tiempo Promedio de Espera</p>
+                    <h2 id="kpi-espera" class="text-3xl font-bold text-amber-600 mt-1">0 min</h2>
+                    <span class="text-xs text-slate-400">Desde pago/registro hasta médico</span>
+                </div>
+                <div class="p-4 bg-amber-50 text-amber-600 rounded-xl">
+                    <i data-lucide="clock" class="w-7 h-7"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">Tiempo Promedio de Consulta</p>
+                    <h2 id="kpi-atencion" class="text-3xl font-bold text-emerald-600 mt-1">0 min</h2>
+                    <span class="text-xs text-slate-400">Duración efectiva en consultorio</span>
+                </div>
+                <div class="p-4 bg-emerald-50 text-emerald-600 rounded-xl">
+                    <i data-lucide="stethoscope" class="w-7 h-7"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 2: Grupos Etarios + Semáforo Manchester -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Grupos Etarios -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Atenciones y Duración por Grupo Etario</h3>
+                    <p class="text-xs text-slate-500 mb-4">Cantidad de pacientes y tiempo promedio de atención médica</p>
+                    <div class="h-64">
+                        <canvas id="chart-edades"></canvas>
+                    </div>
+                </div>
+                <div class="mt-4 overflow-x-auto">
+                    <table class="w-full text-sm text-left border-t border-slate-100">
+                        <thead class="text-xs uppercase text-slate-500 bg-slate-50">
+                            <tr>
+                                <th class="py-2 px-3">Grupo</th>
+                                <th class="py-2 px-3 text-center">Pacientes</th>
+                                <th class="py-2 px-3 text-right">Prom. Atención</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-edades" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Semáforo Manchester -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Tiempo de Espera - Semáforo Manchester</h3>
+                    <p class="text-xs text-slate-500 mb-4">Promedio real de espera vs. tiempo estándar clínico por prioridad</p>
+                    <div class="h-64">
+                        <canvas id="chart-manchester"></canvas>
+                    </div>
+                </div>
+                <div class="mt-4 overflow-x-auto">
+                    <table class="w-full text-sm text-left border-t border-slate-100">
+                        <thead class="text-xs uppercase text-slate-500 bg-slate-50">
+                            <tr>
+                                <th class="py-2 px-3">Prioridad</th>
+                                <th class="py-2 px-3 text-center">Consultas</th>
+                                <th class="py-2 px-3 text-center">Meta</th>
+                                <th class="py-2 px-3 text-right">Espera Real</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-manchester" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 2.5: Atenciones por Sexo y Rango de Edad -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <div class="mb-4">
+                <h3 class="text-lg font-bold text-slate-800">Atenciones por Sexo y Rango de Edad</h3>
+                <p class="text-xs text-slate-500">Distribución demográfica de pacientes atendidos por género y grupo etario</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                <!-- Gráfica de Barras Agrupadas -->
+                <div class="h-64">
+                    <canvas id="chart-sexo-edad"></canvas>
+                </div>
+
+                <!-- Tabla Matriz Cruzada -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border border-slate-200 rounded-lg overflow-hidden">
+                        <thead class="text-xs uppercase text-slate-600 bg-slate-100 border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-3">Sexo</th>
+                                <th class="py-3 px-2 text-center">Niños<br><span class="text-[10px] font-normal">(0-11)</span></th>
+                                <th class="py-3 px-2 text-center">Jóvenes<br><span class="text-[10px] font-normal">(12-26)</span></th>
+                                <th class="py-3 px-2 text-center">Adultos<br><span class="text-[10px] font-normal">(27-59)</span></th>
+                                <th class="py-3 px-2 text-center">A. Mayores<br><span class="text-[10px] font-normal">(60+)</span></th>
+                                <th class="py-3 px-3 text-right font-bold bg-slate-200/60">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-sexo-edad" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 3: Tendencia Mensual / Diaria -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-800">Comportamiento Diario de Consultas en el Periodo</h3>
+            <p class="text-xs text-slate-500 mb-4">Evolución de atenciones finalizadas por día</p>
+            <div class="h-64">
+                <canvas id="chart-tendencia"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/js/coordinacionUrg.js" defer></script>
+</body>
+<%- include('partials/footer') %>

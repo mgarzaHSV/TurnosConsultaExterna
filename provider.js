@@ -28,6 +28,10 @@ import { ConsultorioService } from "./src/services/consultorio.service.js";
 import { MedicoService } from "./src/services/medico.service.js";
 import { RecepcionService } from "./src/services/recepcion.service.js";
 import { TurnoService } from "./src/services/turno.service.js";
+import { CoordinacionUrgRepository } from "./src/repositories/coordinacionUrg.repository.js";
+import { CoordinacionUrgService } from "./src/services/coordinacionUrg.service.js";
+import { CoordinacionUrgController } from "./src/controllers/coordinacionUrg.controller.js";
+import { coordinacionUrgRouter } from "./src/routes/coordinacionUrg.route.js";
 
 
 if(!ENV.DB_URL || !ENV.DB_NAME || !ENV.DB_USER || !ENV.DB_PASSWORD) throw new Error("No se encuentran los datos relacionados al la base de datos")
@@ -44,6 +48,7 @@ const rolRepository = new RolRepository(baseDatos)
 const turnoRepository = new TurnoRepository(baseDatos)
 const medicoRepository = new MedicoRepository(baseDatos)
 const consultorioRepository = new ConsultorioRepository(baseDatos)
+const coordinacionRepository = new CoordinacionUrgRepository(baseDatos);
 
 // Instancias de servicios
 const authService = new AuthService(authRepository, rolRepository)
@@ -53,6 +58,7 @@ const cajaService = new CajaService(cajaRepository, citaRepository, pacienteRepo
 const turnoService = new TurnoService(turnoRepository, pacienteRepository)
 const medicoService = new MedicoService(medicoRepository,citaRepository,pacienteRepository)
 const consultorioService = new ConsultorioService(consultorioRepository)
+const coordinacionService = new CoordinacionUrgService(coordinacionRepository);
 
 // Instancias de controladores
 const authController = new AuthController(authService)
@@ -61,6 +67,7 @@ const citaController = new CitaController(citaService)
 const cajaController = new CajaController(cajaService, citaService)
 const turnoController = new TurnoController(turnoService)
 const medicoController = new MedicoController(medicoService, citaService)
+const coordinacionController = new CoordinacionUrgController(coordinacionService);
 
 // Instancias de routers
 export const AuthRouter = authRouter(authController)
@@ -69,3 +76,4 @@ export const CitaRouter = citaRoute(citaController)
 export const CajaRouter = cajaRouter(cajaController)
 export const TurnoRouter = turnoRouter(turnoController)
 export const MedicoRouter = medicoRouter(medicoController)
+export const CoordinacionRouter = coordinacionUrgRouter(coordinacionController);

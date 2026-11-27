@@ -3,8 +3,9 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import { ENV } from './src/config/env.config.js';
-import { AuthRouter, CajaRouter, CitaRouter, MedicoRouter, RecepcionRouter, TurnoRouter } from './provider.js';
+import { AuthRouter, CajaRouter, CitaRouter, CoordinacionRouter, MedicoRouter, RecepcionRouter, TurnoRouter } from './provider.js';
 import { configMiddleware } from './src/config/init.config.js';
+import { readFileSync } from 'fs';
 
 const app = express(); 
 
@@ -17,6 +18,7 @@ app.use(CitaRouter);
 app.use(CajaRouter);
 app.use(TurnoRouter);
 app.use(MedicoRouter);
+app.use(CoordinacionRouter);
 
 // 404
 app.use((req, res) => {

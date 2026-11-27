@@ -36,7 +36,8 @@ export class AuthController {
                 2: '/recepcion',
                 3: '/caja',
                 4: '/medico',
-                5: '/pantalla'
+                5: '/pantalla',
+                6: '/coordinacion'
             }
         try {
             const conversionIdConsultorio = {
@@ -63,6 +64,9 @@ export class AuthController {
                 */
                this.AuthService.liberarConsultorio(usuario)
             }
+            console.log(usuario)
+            console.log(usuario.idRol)
+            console.log(roles[usuario.idRol])
             if (result !== false){
                 const usuario = await this.AuthService.getDataOfUser(username)
                 res
