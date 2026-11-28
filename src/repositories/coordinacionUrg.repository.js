@@ -7,30 +7,40 @@ export class CoordinacionUrgRepository {
         const filtroConsultorio = consultorio && consultorio !== 'TODOS' 
             ? `AND C.consultorio = '${consultorio}'` 
             : '';
-
-        // 1. Resumen general y tiempos promedio globales (Citas finalizadas estatus '04')
+            
+        // 1. Resumen general y tiempos promedio globales
         const queryResumen = `
             SELECT 
                 COUNT(*) AS totalAtenciones,
-                ISNULL(AVG(
+                ISNULL(ROUND(AVG(
                     CASE 
-                        WHEN C.horaAsignacion IS NOT NULL AND COALESCE(C.horaCobra, C.horaCreacion) IS NOT NULL
-                        THEN DATEDIFF(MINUTE, COALESCE(C.horaCobra, C.horaCreacion), C.horaAsignacion)
+                        WHEN C.horaAsignacion IS NOT NULL AND COALESCE(C.horaCobra, C.horaCreacion) IS NOT NULL THEN
+                            CASE 
+                                WHEN C.horaAsignacion < COALESCE(C.horaCobra, C.horaCreacion)
+                                    THEN (DATEDIFF(SECOND, COALESCE(C.horaCobra, C.horaCreacion), C.horaAsignacion) + 86400) / 60.0
+                                ELSE DATEDIFF(SECOND, COALESCE(C.horaCobra, C.horaCreacion), C.horaAsignacion) / 60.0
+                            END
                     END
-                ), 0) AS promedioEsperaMin,
-                ISNULL(AVG(
+                ), 0), 0) AS promedioEsperaMin,
+                ISNULL(ROUND(AVG(
                     CASE 
-                        WHEN C.horaCierra IS NOT NULL AND C.horaAsignacion IS NOT NULL
-                        THEN DATEDIFF(MINUTE, C.horaAsignacion, C.horaCierra)
+                        WHEN C.horaCierra IS NOT NULL AND C.horaAsignacion IS NOT NULL THEN
+                            CASE 
+                                WHEN C.horaCierra < C.horaAsignacion
+                                    THEN (DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) + 86400) / 60.0
+                                WHEN DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) >= 60
+                                    THEN DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) / 60.0
+                                ELSE NULL
+                            END
                     END
-                ), 0) AS promedioAtencionMin
+                ), 0), 0) AS promedioAtencionMin
             FROM CITA C (NOLOCK)
             WHERE C.estatus = '04'
               AND C.fechaCreacion BETWEEN '${fechaInicio}' AND '${fechaFin}'
               ${filtroConsultorio};
         `;
 
-        // 2. Desglose por Grupo Etario (Niños, Jóvenes, Adultos, Adultos Mayores)
+        // 2. Desglose por Grupo Etario
         const queryEdades = `
             SELECT 
                 CASE 
@@ -46,12 +56,18 @@ export class CoordinacionUrgRepository {
                     ELSE 4
                 END AS orden,
                 COUNT(*) AS cantidad,
-                ISNULL(AVG(
+                ISNULL(ROUND(AVG(
                     CASE 
-                        WHEN C.horaCierra IS NOT NULL AND C.horaAsignacion IS NOT NULL
-                        THEN DATEDIFF(MINUTE, C.horaAsignacion, C.horaCierra)
+                        WHEN C.horaCierra IS NOT NULL AND C.horaAsignacion IS NOT NULL THEN
+                            CASE 
+                                WHEN C.horaCierra < C.horaAsignacion
+                                    THEN (DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) + 86400) / 60.0
+                                WHEN DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) >= 60
+                                    THEN DATEDIFF(SECOND, C.horaAsignacion, C.horaCierra) / 60.0
+                                ELSE NULL
+                            END
                     END
-                ), 0) AS promedioAtencionMin
+                ), 0), 0) AS promedioAtencionMin
             FROM CITA C (NOLOCK)
             INNER JOIN PACIENTE P (NOLOCK) ON C.idPaciente = P.idPaciente
             WHERE C.estatus = '04'
